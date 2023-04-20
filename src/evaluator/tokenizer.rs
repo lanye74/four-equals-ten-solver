@@ -1,10 +1,6 @@
-use crate::util;
-
-
-
 #[derive(PartialEq)]
 #[derive(Debug)]
-enum Tokens {
+pub enum Token {
 	Add,
 	Subtract,
 	Multiply,
@@ -26,45 +22,18 @@ enum Tokens {
 
 
 
-pub fn tokenize(input: String) -> Vec<Tokens> {
+pub fn tokenize(input: String) -> Vec<Token> {
+	// this function assumes that any numbers input are positive single-digit integers, which is true for 4=10
+
 	let characters = input
 		.split("")
-		.filter(|char| *char != "")
-		.collect::<Vec<&str>>();
+		.filter(|char| *char != "");
 
 
-	// probably bad practice to .collect().iter() but yknow
-	let mut token_output: Vec<Tokens> = Vec::new();
+	let mut token_output: Vec<Token> = Vec::new();
 
-	for (_index, character) in characters.iter().enumerate() {
-		// deref
-		let character = *character;
-
-		let token = match character {
-			"+" => Tokens::Add,
-			"-" => Tokens::Subtract,
-			"*" => Tokens::Multiply,
-			"/" => Tokens::Divide,
-			"(" => Tokens::LParen,
-			")" => Tokens::RParen,
-
-			"0" => Tokens::Zero,
-			"1" => Tokens::One,
-			"2" => Tokens::Two,
-			"3" => Tokens::Three,
-			"4" => Tokens::Four,
-			"5" => Tokens::Five,
-			"6" => Tokens::Six,
-			"7" => Tokens::Seven,
-			"8" => Tokens::Eight,
-			"9" => Tokens::Nine,
-
-			other => {
-				dbg!(other);
-				panic!("token parser received invalid input!")
-			}
-		};
-
+	for (_index, character) in characters.enumerate() {
+		let token = map_to_token(character);
 		token_output.push(token);
 	}
 
@@ -73,35 +42,75 @@ pub fn tokenize(input: String) -> Vec<Tokens> {
 
 
 
+pub fn map_to_token(character: &str) -> Token {
+	return match character {
+		"+" => Token::Add,
+		"-" => Token::Subtract,
+		"*" => Token::Multiply,
+		"/" => Token::Divide,
+		"(" => Token::LParen,
+		")" => Token::RParen,
+
+		"0" => Token::Zero,
+		"1" => Token::One,
+		"2" => Token::Two,
+		"3" => Token::Three,
+		"4" => Token::Four,
+		"5" => Token::Five,
+		"6" => Token::Six,
+		"7" => Token::Seven,
+		"8" => Token::Eight,
+		"9" => Token::Nine,
+
+		other => {
+			dbg!(other);
+			panic!("token mapper received invalid input!");
+		}
+	};
+}
+
+
+
+pub fn map_from_token(token: &Token) -> String {
+	return match token {
+		Token::Add => String::from("+"),
+		Token::Subtract => String::from("-"),
+		Token::Multiply => String::from("*"),
+		Token::Divide => String::from("/"),
+
+		Token::Zero => String::from("0"),
+		Token::One => String::from("1"),
+		Token::Two => String::from("2"),
+		Token::Three => String::from("3"),
+		Token::Four => String::from("4"),
+		Token::Five => String::from("5"),
+		Token::Six => String::from("6"),
+		Token::Seven => String::from("7"),
+		Token::Eight => String::from("8"),
+		Token::Nine => String::from("9"),
+
+		other => {
+			dbg!(other);
+			panic!("token mapper received invalid input!");
+		}
+	};
+}
+
+
+
 #[cfg(test)]
 #[test]
 fn test_tokenizer() {
+	use crate::util;
+
 	let result = tokenize(String::from("(3*5)/7+0-1*2*9/(8+4)*6"));
 
 	let expected = vec![
-		Tokens::LParen,
-		Tokens::Three,
-		Tokens::Multiply,
-		Tokens::Five,
-		Tokens::RParen,
-		Tokens::Divide,
-		Tokens::Seven,
-		Tokens::Add,
-		Tokens::Zero,
-		Tokens::Subtract,
-		Tokens::One,
-		Tokens::Multiply,
-		Tokens::Two,
-		Tokens::Multiply,
-		Tokens::Nine,
-		Tokens::Divide,
-		Tokens::LParen,
-		Tokens::Eight,
-		Tokens::Add,
-		Tokens::Four,
-		Tokens::RParen,
-		Tokens::Multiply,
-		Tokens::Six
+		Token::LParen, Token::Three, Token::Multiply, Token::Five, Token::RParen,
+		Token::Divide, Token::Seven, Token::Add, Token::Zero, Token::Subtract, Token::One,
+		Token::Multiply, Token::Two, Token::Multiply, Token::Nine, Token::Divide,
+		Token::LParen, Token::Eight, Token::Add, Token::Four, Token::RParen,
+		Token::Multiply, Token::Six
 	];
 
 
