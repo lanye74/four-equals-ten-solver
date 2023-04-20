@@ -1,39 +1,39 @@
-// use std::io;
+use std::io;
 
 mod brute_forcer;
-mod parser;
+mod evaluator;
 mod util;
 
 
 
 fn main() {
-	// let stdin = io::stdin();
+	let stdin = io::stdin();
 
-	// let mut input = String::new();
+	let mut input = String::new();
 
-	// println!("Enter your numbers: ");
-
-
-	// stdin
-	// 	.read_line(&mut input)
-	// 	.expect("should've been able to read line!");
+	println!("Enter your numbers: ");
 
 
-	// let input = input
-	// 	.trim() // clean up new lines
-	// 	.split("") // split by character
-	// 	.filter(|char| *char != "") // filter out empty characters because they're there
-	// 	.map(|char| char.parse::<u8>()) // parse character into u8
-	// 	.map(|num| num.unwrap_or(255)) // parse returns result, unwrap. if unvalid, set to 255
-	// 	.filter(|num| *num < 10) // clean up values marked as invalid
-	// 	.collect::<Vec<u8>>(); // collect to vector
+	stdin
+		.read_line(&mut input)
+		.expect("should've been able to read line!");
 
 
-	// if input.len() != 4 {
-	// 	panic!("Invalid input!");
-	// }
+	let input = input
+		.trim() // clean up new lines
+		.split("") // split by character
+		.filter(|char| *char != "") // filter out empty characters because they're there
+		.map(|char| char.parse::<u8>()) // parse character into u8
+		.map(|num| num.unwrap_or(255)) // parse returns result, unwrap. if unvalid, set to 255
+		.filter(|num| *num < 10) // clean up values marked as invalid
+		.collect::<Vec<u8>>(); // collect to vector
 
-	let input = vec![2, 3, 4, 5];
+
+	if input.len() != 4 {
+		panic!("Invalid input!");
+	}
+
+	// let input = vec![2, 3, 4, 5];
 
 
 	let solution = brute_forcer::brute_force(&input);

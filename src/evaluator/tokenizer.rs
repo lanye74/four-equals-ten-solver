@@ -26,18 +26,7 @@ enum Tokens {
 
 
 
-pub fn parse(input: String) -> f32 {
-	// ownership can be passed here. no need to ref
-	let tokens = tokenize(input);
-
-	dbg!(tokens);
-
-	return 3f32;
-}
-
-
-
-fn tokenize(input: String) -> Vec<Tokens> {
+pub fn tokenize(input: String) -> Vec<Tokens> {
 	let characters = input
 		.split("")
 		.filter(|char| *char != "")
@@ -84,6 +73,7 @@ fn tokenize(input: String) -> Vec<Tokens> {
 
 
 
+#[cfg(test)]
 #[test]
 fn test_tokenizer() {
 	let result = tokenize(String::from("(3*5)/7+0-1*2*9/(8+4)*6"));
