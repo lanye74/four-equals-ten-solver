@@ -1,4 +1,5 @@
 #[derive(PartialEq)]
+#[derive(Clone)]
 #[derive(Debug)]
 pub enum Token {
 	Add,
@@ -8,16 +9,7 @@ pub enum Token {
 	LParen,
 	RParen,
 
-	Zero,
-	One,
-	Two,
-	Three,
-	Four,
-	Five,
-	Six,
-	Seven,
-	Eight,
-	Nine
+	Number(f32)
 }
 
 
@@ -51,20 +43,8 @@ pub fn map_to_token(character: &str) -> Token {
 		"(" => Token::LParen,
 		")" => Token::RParen,
 
-		"0" => Token::Zero,
-		"1" => Token::One,
-		"2" => Token::Two,
-		"3" => Token::Three,
-		"4" => Token::Four,
-		"5" => Token::Five,
-		"6" => Token::Six,
-		"7" => Token::Seven,
-		"8" => Token::Eight,
-		"9" => Token::Nine,
-
 		other => {
-			dbg!(other);
-			panic!("token mapper received invalid input!");
+			return Token::Number(other.parse::<f32>().expect("token mapper received invalid input!"));
 		}
 	};
 }
@@ -78,20 +58,9 @@ pub fn map_from_token(token: &Token) -> String {
 		Token::Multiply => String::from("*"),
 		Token::Divide => String::from("/"),
 
-		Token::Zero => String::from("0"),
-		Token::One => String::from("1"),
-		Token::Two => String::from("2"),
-		Token::Three => String::from("3"),
-		Token::Four => String::from("4"),
-		Token::Five => String::from("5"),
-		Token::Six => String::from("6"),
-		Token::Seven => String::from("7"),
-		Token::Eight => String::from("8"),
-		Token::Nine => String::from("9"),
-
 		other => {
 			dbg!(other);
-			panic!("token mapper received invalid input!");
+			panic!("numbers should be unwrapped!");
 		}
 	};
 }
@@ -106,11 +75,11 @@ fn test_tokenizer() {
 	let result = tokenize(String::from("(3*5)/7+0-1*2*9/(8+4)*6"));
 
 	let expected = vec![
-		Token::LParen, Token::Three, Token::Multiply, Token::Five, Token::RParen,
-		Token::Divide, Token::Seven, Token::Add, Token::Zero, Token::Subtract, Token::One,
-		Token::Multiply, Token::Two, Token::Multiply, Token::Nine, Token::Divide,
-		Token::LParen, Token::Eight, Token::Add, Token::Four, Token::RParen,
-		Token::Multiply, Token::Six
+		Token::LParen, Token::Number(3.0), Token::Multiply, Token::Number(5.0), Token::RParen,
+		Token::Divide, Token::Number(7.0), Token::Add, Token::Number(0.0), Token::Subtract, Token::Number(1.0),
+		Token::Multiply, Token::Number(2.0), Token::Multiply, Token::Number(9.0), Token::Divide,
+		Token::LParen, Token::Number(8.0), Token::Add, Token::Number(4.0), Token::RParen,
+		Token::Multiply, Token::Number(6.0)
 	];
 
 
