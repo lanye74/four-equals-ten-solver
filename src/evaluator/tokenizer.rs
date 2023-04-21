@@ -51,19 +51,19 @@ pub fn map_to_token(character: &str) -> Token {
 
 
 
-pub fn map_from_token(token: &Token) -> String {
-	return match token {
-		Token::Add => String::from("+"),
-		Token::Subtract => String::from("-"),
-		Token::Multiply => String::from("*"),
-		Token::Divide => String::from("/"),
+// pub fn map_from_token(token: &Token) -> String {
+// 	return match token {
+// 		Token::Add => String::from("+"),
+// 		Token::Subtract => String::from("-"),
+// 		Token::Multiply => String::from("*"),
+// 		Token::Divide => String::from("/"),
 
-		other => {
-			dbg!(other);
-			panic!("numbers should be unwrapped!");
-		}
-	};
-}
+// 		other => {
+// 			dbg!(other);
+// 			panic!("numbers should be unwrapped!");
+// 		}
+// 	};
+// }
 
 
 
