@@ -34,20 +34,6 @@ pub fn find_token(vec: &Vec<Token>, token: Token) -> usize {
 
 
 
-pub fn find_token_from_position(vec: &Vec<Token>, token: Token, position: usize) -> usize {
-	for index in position..(vec.len()) {
-		let element = &vec[index];
-
-		if *element == token {
-			return index;
-		}
-	}
-
-	return usize::MAX;
-}
-
-
-
 pub fn find_token_in_range(vec: &Vec<Token>, token: Token, lower_bound: usize, upper_bound: usize) -> usize {
 	for index in lower_bound..=upper_bound {
 		let element = &vec[index];
@@ -66,4 +52,18 @@ pub fn find_token_in_range(vec: &Vec<Token>, token: Token, lower_bound: usize, u
 // 	return input.iter()
 // 		.position(|token| *token == item)
 // 		.unwrap_or(usize::MAX);
+// }
+
+
+
+// pub fn find_token_from_position(vec: &Vec<Token>, token: Token, position: usize) -> usize {
+// 	for index in position..(vec.len()) {
+// 		let element = &vec[index];
+
+// 		if *element == token {
+// 			return index;
+// 		}
+// 	}
+
+// 	return usize::MAX;
 // }

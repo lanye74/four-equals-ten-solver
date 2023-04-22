@@ -1,4 +1,4 @@
-use crate::util::{find_token_from_position, find_token, find_token_in_range};
+use crate::util::{find_token, find_token_in_range};
 use super::tokenizer::Token;
 
 
