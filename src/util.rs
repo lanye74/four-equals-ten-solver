@@ -20,8 +20,36 @@ pub fn vecs_are_equal<T: std::cmp::PartialEq>(vec1: Vec<T>, vec2: Vec<T>) -> boo
 
 
 
+pub fn find_token(vec: &Vec<Token>, token: Token) -> usize {
+	for index in 0..(vec.len()) {
+		let element = &vec[index];
+
+		if *element == token {
+			return index;
+		}
+	}
+
+	return usize::MAX;
+}
+
+
+
 pub fn find_token_from_position(vec: &Vec<Token>, token: Token, position: usize) -> usize {
 	for index in position..(vec.len()) {
+		let element = &vec[index];
+
+		if *element == token {
+			return index;
+		}
+	}
+
+	return usize::MAX;
+}
+
+
+
+pub fn find_token_in_range(vec: &Vec<Token>, token: Token, lower_bound: usize, upper_bound: usize) -> usize {
+	for index in lower_bound..=upper_bound {
 		let element = &vec[index];
 
 		if *element == token {
