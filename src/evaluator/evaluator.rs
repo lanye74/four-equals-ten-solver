@@ -39,10 +39,8 @@ pub fn evaluate(input: String) -> f32 {
 		}
 
 		// remove unneeded parentheses
-		dbg!(&tokens);
 		remove_parentheses(&mut tokens);
 	}
-
 
 
 	let input_len = tokens.len();
@@ -60,7 +58,7 @@ pub fn evaluate(input: String) -> f32 {
 	}
 
 
-	return value_from_token(&tokens[0]);
+	return unwrap_token(&tokens[0]);
 }
 
 
@@ -131,8 +129,8 @@ fn remove_parentheses(input: &mut Vec<Token>) {
 
 
 fn evaluate_expression(operation: &Token, operand_one: &Token, operand_two: &Token) -> f32 {
-	let operand_one = value_from_token(operand_one);
-	let operand_two = value_from_token(operand_two);
+	let operand_one = unwrap_token(operand_one);
+	let operand_two = unwrap_token(operand_two);
 
 	return match operation {
 		Token::Add => operand_one + operand_two,
@@ -148,7 +146,7 @@ fn evaluate_expression(operation: &Token, operand_one: &Token, operand_two: &Tok
 
 
 
-fn value_from_token(number: &Token) -> f32 {
+fn unwrap_token(number: &Token) -> f32 {
 	return match number {
 		Token::Number(value) => *value,
 		_ => panic!("value_from_token called with non-number!")
