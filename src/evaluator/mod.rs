@@ -1,7 +1,6 @@
-mod tokenizer;
-mod evaluator;
-mod parser;
+pub mod tokenizer;
+pub mod parser;
 
 // expose evaluator::evaluate
-pub use evaluator::evaluate;
+pub use parser::parse;
 pub use tokenizer::Token;
