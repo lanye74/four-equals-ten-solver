@@ -2,7 +2,7 @@
 
 mod brute_forcer;
 mod evaluator;
-mod util;
+pub mod util;
 
 
 
@@ -36,5 +36,5 @@ fn main() {
 	let input = vec![2, 3, 4, 5];
 
 
-	let solution = brute_forcer::brute_force(&input);
+	let _solution = brute_forcer::brute_force(&input);
 }

@@ -13,7 +13,7 @@ pub fn parse(mut tokens: Vec<Token>) -> f32 {
 
 	// if there is a set of parentheses
 	if lparen_pos != usize::MAX {
-		let rparen_pos = find_token(&tokens, Token::RParen);
+		let mut rparen_pos = find_token(&tokens, Token::RParen);
 
 
 		// calculate number of expressions to evaluate inside the parentheses
@@ -43,6 +43,9 @@ pub fn parse(mut tokens: Vec<Token>) -> f32 {
 
 			// replace [..., operand_one, operation, operand_two, ...] with [..., result, ...]
 			substitute_expression(&mut tokens, operator_pos, operation_value);
+
+			// rparen has moved because of substitution. update it
+			rparen_pos = find_token(&tokens, Token::RParen);
 
 			num_expressions -= 1;
 		}
