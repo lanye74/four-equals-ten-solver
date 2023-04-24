@@ -7,14 +7,12 @@ pub fn parse(mut tokens: Vec<Token>) -> f32 {
 	// this function assumes there is only one set of parentheses, and that the input is valid
 	// i might write an input validator later. but for now
 
-
 	// search for parentheses
 	let lparen_pos = find_token(&tokens, Token::LParen);
 
 	// if there is a set of parentheses
 	if lparen_pos != usize::MAX {
 		let mut rparen_pos = find_token(&tokens, Token::RParen);
-
 
 		// calculate number of expressions to evaluate inside the parentheses
 		// position of tokens in parentheses = (lparen + 1, rparen - 1)
@@ -23,20 +21,8 @@ pub fn parse(mut tokens: Vec<Token>) -> f32 {
 
 		// loop over every expression
 		while num_expressions > 0 {
-			// check for multiplication/division
-			let multiply_pos = find_token_in_range(&tokens, Token::Multiply, lparen_pos, rparen_pos);
-			let divide_pos = find_token_in_range(&tokens, Token::Divide, lparen_pos, rparen_pos);
-
-			// find which one comes first
-			let mut operator_pos = std::cmp::min(multiply_pos, divide_pos);
-
-			// if there's not multiplication/division, find whichever addition/subtraction comes first
-			if operator_pos == usize::MAX {
-				let add_pos = find_token_in_range(&tokens, Token::Add, lparen_pos, rparen_pos);
-				let subtract_pos = find_token_in_range(&tokens, Token::Subtract, lparen_pos, rparen_pos);
-
-				operator_pos = std::cmp::min(add_pos, subtract_pos);
-			}
+			// find where the next operator is (mult/div - add/sub)
+			let operator_pos = find_next_operator_pos(&tokens, Some(lparen_pos), Some(rparen_pos));
 
 			// compute the expression
 			let operation_value = evaluate_expression(&tokens[operator_pos], &tokens[operator_pos - 1], &tokens[operator_pos + 1]);
@@ -62,18 +48,7 @@ pub fn parse(mut tokens: Vec<Token>) -> f32 {
 	let mut num_expressions = (input_len - 1) / 2;
 
 	while num_expressions > 0 {
-		let multiply_pos = find_token(&tokens, Token::Multiply);
-		let divide_pos = find_token(&tokens, Token::Divide);
-
-		let mut operator_pos = std::cmp::min(multiply_pos, divide_pos);
-
-			// if there's not multiplication/division, find whichever addition/subtraction comes first
-		if operator_pos == usize::MAX {
-			let add_pos = find_token(&tokens, Token::Add);
-			let subtract_pos = find_token(&tokens, Token::Subtract);
-
-			operator_pos = std::cmp::min(add_pos, subtract_pos);
-		}
+		let operator_pos = find_next_operator_pos(&tokens, None, None);
 
 		let operation_value = evaluate_expression(&tokens[operator_pos], &tokens[operator_pos - 1], &tokens[operator_pos + 1]);
 
@@ -84,6 +59,30 @@ pub fn parse(mut tokens: Vec<Token>) -> f32 {
 
 
 	return value_from_token(&tokens[0]);
+}
+
+
+
+fn find_next_operator_pos(input: &Vec<Token>, lower_bound: Option<usize>, upper_bound: Option<usize>) -> usize {
+	let lower_bound = lower_bound.unwrap_or(0);
+	let upper_bound = upper_bound.unwrap_or(input.len() - 1);
+
+	let multiply_pos = find_token_in_range(input, Token::Multiply, lower_bound, upper_bound);
+	let divide_pos = find_token_in_range(input, Token::Divide, lower_bound, upper_bound);
+
+
+	// find which comes first
+	let mut operator_pos = std::cmp::min(multiply_pos, divide_pos);
+
+	// if neither is present, search for addition/subtraction
+	if operator_pos == usize::MAX {
+		let add_pos = find_token_in_range(input, Token::Add, lower_bound, upper_bound);
+		let subtract_pos = find_token_in_range(input, Token::Subtract, lower_bound, upper_bound);
+
+		operator_pos = std::cmp::min(add_pos, subtract_pos);
+	}
+
+	return operator_pos;
 }
 
 
