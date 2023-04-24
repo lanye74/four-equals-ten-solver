@@ -1,9 +1,11 @@
 use crate::util::{find_token, find_token_in_range};
-use super::tokenizer::Token;
+use super::tokenizer::{self, Token};
 
 
 
-pub fn parse(mut tokens: Vec<Token>) -> f32 {
+pub fn evaluate(input: String) -> f32 {
+	let mut tokens: Vec<Token> = tokenizer::tokenize(input);
+
 	// this function assumes there is only one set of parentheses, and that the input is valid
 	// i might write an input validator later. but for now
 
