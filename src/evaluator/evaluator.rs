@@ -1,4 +1,4 @@
-use crate::util::{find_token, find_token_in_range};
+use crate::util::{unwrap_token, find_token, find_token_in_range};
 use super::tokenizer::{self, Token};
 
 
@@ -141,14 +141,5 @@ fn evaluate_expression(operation: &Token, operand_one: &Token, operand_two: &Tok
 		_ => {
 			panic!("invalid operation supplied to evaluate_expression!");
 		}
-	};
-}
-
-
-
-fn unwrap_token(number: &Token) -> f32 {
-	return match number {
-		Token::Number(value) => *value,
-		_ => panic!("value_from_token called with non-number!")
 	};
 }
