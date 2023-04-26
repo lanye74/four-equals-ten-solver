@@ -33,8 +33,8 @@ fn main() {
 	// 	panic!("Invalid input!");
 	// }
 
-	let input = vec![2, 3, 4, 5];
+	let mut input = vec![7, 4, 1, 1];
 
 
-	let _solution = brute_forcer::brute_force(&input);
+	let _solution = brute_forcer::brute_force(&mut input);
 }

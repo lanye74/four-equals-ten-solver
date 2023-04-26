@@ -1,66 +1,102 @@
-// use crate::evaluator::evaluator;
+use crate::evaluator::evaluator;
 
 
 
-pub fn brute_force(input: &Vec<u8>) -> String {
-	// evaluator::evaluate("(3*5)/7+0-1*2*9/(8+4)*6".to_string());
+pub fn brute_force(input: &mut Vec<u8>) -> String {
+	evaluator::evaluate(String::from("6*(1/9*9+2)+3/2"));
 
+	let permutations = generate_permutations(input);
 
-	// dbg!(evaluator::evaluate(String::from("6*(1/9*9+2)+3/2")));
-	// permutate(input.len(), input);
+	dbg!(&permutations);
+	dbg!(permutations.len());
 
-	// dbg!(input);
+	// attempt to solve without parentheses
+	for permutation in permutations.iter() {
+		let mut operator_state: Vec<u8> = vec![0; input.len() - 1];
 
-	// use heap's algorithm here
-	generate_permutations(&vec![1, 2, 3, 4]);
+		let mut expression = String::new();
 
+		for i in 0..(input.len()) {
+			expression.push(char::from_digit(permutation[i] as u32, 10).unwrap());
+
+			if i != input.len() - 1 {
+				expression.push(map_number_to_operator(operator_state[i]));
+			}
+		}
+
+		// for (i, operator) in operator_state.iter().enumerate() {
+
+		operator_state[0] += 1;
+
+		for i in 0..(operator_state.len()) {
+			let mut operator = &operator_state[i];
+
+			if operator == 4 {
+				operator = 0;
+
+				if i + 1 == operator_state.len() {
+					// done iterating
+				}
+
+				operator[i + 1] += 1;
+			}
+		}
+	}
 
 	return String::from("");
 }
 
 
 
-fn generate_permutations(input: &Vec<u8>) -> Vec<Vec<u8>> {
-	let output: Vec<Vec<u8>> = vec![];
+fn map_number_to_operator(number: u8) -> char {
+	return match number {
+		0 => char::from('+'),
+		1 => char::from('-'),
+		2 => char::from('*'),
+		3 => char::from('/'),
 
-
-	// let indices =
-	// for i in 0..(factorial(input.len())) {
-
-	return output;
+		_ => panic!("invalid number supplied to map_number_to_operator!")
+	};
 }
 
 
 
-/*
-1 2 3 4
-1 2 4 3
-1 3 2 4
-1 3 4 2
-1 4 2 3
-1 4 3 2
+fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
+	let len = input.len();
 
-2 1 3 4
-2 1 4 3
-2 3 1 4
-2 3 4 1
-2 4 1 3
-2 4 3 1
+	let mut output: Vec<Vec<u8>> = vec![];
+	let mut state: Vec<usize> = vec![0; len];
 
-3 1 2 4
-3 1 4 2
-3 2 1 4
-3 2 4 1
-3 4 1 2
-3 4 2 1
 
-4 1 2 3
-4 1 3 2
-4 2 1 3
-4 2 3 1
-4 3 1 2
-4 3 2 1
-*/
+	output.push(input.clone());
+
+	let mut i = 1;
+
+	// quite honestly i have no idea how this works i juts ripped it from wikipedia
+	while i < len {
+		if state[i] < i {
+			if i % 2 == 0 {
+				input.swap(0, i);
+			} else {
+				input.swap(state[i], i);
+			}
+
+			output.push(input.clone());
+
+			state[i] += 1;
+
+			i = 1;
+		} else {
+			state[i] = 0;
+			i += 1;
+		}
+	}
+
+	output.sort();
+	output.dedup();
+
+	return output;
+}
 
 
 
