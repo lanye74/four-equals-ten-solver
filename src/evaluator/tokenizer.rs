@@ -1,6 +1,6 @@
 #[derive(PartialEq)]
 #[derive(Clone)]
-#[derive(Debug)]
+// #[derive(Debug)]
 pub enum Token {
 	Add,
 	Subtract,

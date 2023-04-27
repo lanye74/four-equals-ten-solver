@@ -24,21 +24,20 @@ pub fn brute_force(input: &mut Vec<u8>) -> String {
 			}
 		}
 
-		// for (i, operator) in operator_state.iter().enumerate() {
 
 		operator_state[0] += 1;
 
 		for i in 0..(operator_state.len()) {
-			let mut operator = &operator_state[i];
+			let operator = operator_state[i];
 
 			if operator == 4 {
-				operator = 0;
+				operator_state[i] = 0;
 
 				if i + 1 == operator_state.len() {
 					// done iterating
 				}
 
-				operator[i + 1] += 1;
+				operator_state[i + 1] += 1;
 			}
 		}
 	}
