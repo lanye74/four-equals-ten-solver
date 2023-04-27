@@ -1,7 +1,6 @@
 use std::io;
 
-mod brute_forcer;
-mod evaluator;
+mod solver;
 pub mod util;
 
 
@@ -34,7 +33,7 @@ fn main() {
 	}
 
 
-	let solution = brute_forcer::brute_force(&mut input);
+	let solution = solver::brute_force(&mut input);
 
 	if solution.is_empty() {
 		println!("No solution found!");
