@@ -3,46 +3,64 @@ use crate::evaluator::evaluator;
 
 
 pub fn brute_force(input: &mut Vec<u8>) -> String {
-	evaluator::evaluate(String::from("6*(1/9*9+2)+3/2"));
-
 	let permutations = generate_permutations(input);
 
-	dbg!(&permutations);
-	dbg!(permutations.len());
+	let input_len = input.len();
+
+	let mut output = String::new();
 
 	// attempt to solve without parentheses
-	for permutation in permutations.iter() {
-		let mut operator_state: Vec<u8> = vec![0; input.len() - 1];
+	'permutation_loop: for permutation in permutations.iter() {
+		let mut operator_state: Vec<u8> = vec![0; input_len - 1];
 
-		let mut expression = String::new();
-
-		for i in 0..(input.len()) {
-			expression.push(char::from_digit(permutation[i] as u32, 10).unwrap());
-
-			if i != input.len() - 1 {
-				expression.push(map_number_to_operator(operator_state[i]));
-			}
-		}
+		let operator_state_len = operator_state.len();
 
 
-		operator_state[0] += 1;
+		'operation_loop: loop {
+			let mut expression = String::new();
 
-		for i in 0..(operator_state.len()) {
-			let operator = operator_state[i];
 
-			if operator == 4 {
-				operator_state[i] = 0;
+			for i in 0..input_len {
+				expression.push(char::from_digit(permutation[i] as u32, 10).unwrap());
 
-				if i + 1 == operator_state.len() {
-					// done iterating
+				if i != input_len - 1 {
+					expression.push(map_number_to_operator(operator_state[i]));
 				}
+			}
 
-				operator_state[i + 1] += 1;
+			let result = evaluator::evaluate(expression.clone());
+
+			if result == 10.0 {
+				// winner found!
+				output = expression;
+				break 'permutation_loop;
+			}
+
+
+			// go to next operator state
+			operator_state[0] += 1;
+
+			for i in 0..operator_state_len {
+				let operator = operator_state[i];
+
+				// wrap operator states (s[0] = 4; s[1] = 0; --> s[0] = 0; s[1] = 1);
+				if operator == 4 {
+					operator_state[i] = 0;
+
+					if i + 1 == operator_state_len {
+						// worked through every operator combination; run the loop again
+						// this is equivalent to break 'permutation loop but just for clarity
+						break 'operation_loop;
+					}
+
+					operator_state[i + 1] += 1;
+				}
 			}
 		}
 	}
 
-	return String::from("");
+
+	return output;
 }
 
 
@@ -71,7 +89,7 @@ fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 
 	let mut i = 1;
 
-	// quite honestly i have no idea how this works i juts ripped it from wikipedia
+	// quite honestly i have no idea how this works i just ripped it from wikipedia
 	while i < len {
 		if state[i] < i {
 			if i % 2 == 0 {
@@ -96,15 +114,3 @@ fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 
 	return output;
 }
-
-
-
-// fn factorial(of: usize) -> usize {
-// 	let mut product: usize = 1;
-
-// 	for i in 2..=of {
-// 		product *= i;
-// 	}
-
-// 	return product;
-// }
