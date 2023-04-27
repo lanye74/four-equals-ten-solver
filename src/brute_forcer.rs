@@ -120,8 +120,6 @@ fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 #[cfg(test)]
 #[test]
 fn test_brute_forcer() {
-	assert_eq!(brute_force(&mut vec![8, 2, 7, 1]), String::from("8*2-7+1"));
-	// this one has one other immediate solution i can think of, 5*3-6+1, but this is what it will output
-	assert_eq!(brute_force(&mut vec![5, 1, 6, 3]), String::from("6*5/3*1"));
-
+	assert_eq!(brute_force(&mut vec![8, 2, 7, 1]), String::from("1+2*8-7"));
+	assert_eq!(brute_force(&mut vec![5, 1, 6, 3]), String::from("1+3*5-6"));
 }
