@@ -10,7 +10,7 @@ fn main() {
 
 	let mut input = String::new();
 
-	println!("Enter your numbers: ");
+	println!("Enter your digits, space-seperated: ");
 
 
 	stdin
@@ -20,7 +20,7 @@ fn main() {
 
 	let mut input = input
 		.trim() // clean up new lines
-		.split("") // split by character
+		.split(" ") // split by character
 		.filter(|char| *char != "") // filter out empty characters because they're there
 		.map(|char| char.parse::<u8>()) // parse character into u8
 		.map(|num| num.unwrap_or(255)) // parse returns result, unwrap. if unvalid, set to 255

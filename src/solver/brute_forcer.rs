@@ -1,5 +1,7 @@
 use crate::solver::evaluator;
 
+use super::operator_permutator::OperatorPermutator;
+
 
 
 pub fn brute_force(input: &mut Vec<u8>) -> String {
@@ -11,20 +13,18 @@ pub fn brute_force(input: &mut Vec<u8>) -> String {
 
 	// attempt to solve without parentheses
 	'permutation_loop: for permutation in permutations.iter() {
-		let mut operator_state: Vec<u8> = vec![0; input_len - 1];
-
-		let operator_state_len = operator_state.len();
-
+		let mut operator_permutator = OperatorPermutator::new(String::from("+-*/"), input_len - 1);
 
 		'operation_loop: loop {
 			let mut expression = String::new();
 
-
+			// build expression
 			for i in 0..input_len {
 				expression.push(char::from_digit(permutation[i] as u32, 10).unwrap());
 
 				if i != input_len - 1 {
-					expression.push(map_number_to_operator(operator_state[i]));
+					println!("{:?}", operator_permutator.state);
+					expression.push(map_number_to_operator(operator_permutator.state[i]));
 				}
 			}
 
@@ -37,24 +37,12 @@ pub fn brute_force(input: &mut Vec<u8>) -> String {
 			}
 
 
-			// go to next operator state
-			operator_state[0] += 1;
+			let maxed = operator_permutator.increment();
 
-			for i in 0..operator_state_len {
-				let operator = operator_state[i];
-
-				// wrap operator states (s[0] = 4; s[1] = 0; --> s[0] = 0; s[1] = 1);
-				if operator == 4 {
-					operator_state[i] = 0;
-
-					if i + 1 == operator_state_len {
-						// worked through every operator combination; run the loop again
-						// this is equivalent to break 'permutation loop but just for clarity
-						break 'operation_loop;
-					}
-
-					operator_state[i + 1] += 1;
-				}
+			if maxed == true {
+				// worked through every operator combination; run the loop again
+				// this is equivalent to break 'permutation loop but just for clarity
+				break 'operation_loop;
 			}
 		}
 	}
@@ -65,6 +53,7 @@ pub fn brute_force(input: &mut Vec<u8>) -> String {
 
 
 
+// TODO: use hashmap
 fn map_number_to_operator(number: u8) -> char {
 	return match number {
 		0 => char::from('+'),
@@ -109,6 +98,7 @@ fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 		}
 	}
 
+	// TODO: check for duplicates in the input before doing this
 	output.sort();
 	output.dedup();
 

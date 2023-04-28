@@ -55,11 +55,3 @@ pub fn unwrap_token(number: &Token) -> f32 {
 		_ => panic!("value_from_token called with non-number!")
 	};
 }
-
-
-
-// fn find_token(input: &Vec<Token>, item: Token) -> usize {
-// 	return input.iter()
-// 		.position(|token| *token == item)
-// 		.unwrap_or(usize::MAX);
-// }
