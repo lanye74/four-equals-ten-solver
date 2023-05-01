@@ -22,26 +22,28 @@ pub fn brute_force(input: &mut Vec<u8>) -> String {
 			for i in 0..input_len {
 				expression.push(char::from_digit(permutation[i] as u32, 10).unwrap());
 
+				// ensures that a dangling operator isn't placed
 				if i != input_len - 1 {
-					println!("{:?}", operator_permutator.state);
-					expression.push(map_number_to_operator(operator_permutator.state[i]));
+					expression.push(operator_permutator.get_operator_at(i));
 				}
 			}
 
 			let result = evaluator::evaluate(expression.clone());
 
-			if result == 10.0 {
+			if result == 10f32 {
 				// winner found!
 				output = expression;
 				break 'permutation_loop;
 			}
 
 
-			let maxed = operator_permutator.increment();
+			operator_permutator.increment();
 
-			if maxed == true {
+			let exhausted_all_permutations = operator_permutator.is_maxed();
+
+			if exhausted_all_permutations == true {
 				// worked through every operator combination; run the loop again
-				// this is equivalent to break 'permutation loop but just for clarity
+				// this is equivalent to continue 'permutation loop but just for clarity
 				break 'operation_loop;
 			}
 		}
@@ -49,20 +51,6 @@ pub fn brute_force(input: &mut Vec<u8>) -> String {
 
 
 	return output;
-}
-
-
-
-// TODO: use hashmap
-fn map_number_to_operator(number: u8) -> char {
-	return match number {
-		0 => char::from('+'),
-		1 => char::from('-'),
-		2 => char::from('*'),
-		3 => char::from('/'),
-
-		_ => panic!("invalid number supplied to map_number_to_operator!")
-	};
 }
 
 

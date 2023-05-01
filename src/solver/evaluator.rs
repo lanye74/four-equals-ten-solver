@@ -149,6 +149,11 @@ fn evaluate_expression(operation: &Token, operand_one: &Token, operand_two: &Tok
 #[cfg(test)]
 #[test]
 fn test_evaluator() {
+	// basic checks
 	assert_eq!(evaluate(String::from("7*3-(1-3)")), 23f32);
 	assert_eq!(evaluate(String::from("4/0+1*2")), f32::INFINITY);
+
+	// pemdas
+	assert_eq!(evaluate(String::from("4+3*2")), 10f32);
+	assert_eq!(evaluate(String::from("3-2-6*6/3")), -11f32);
 }
