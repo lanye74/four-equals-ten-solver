@@ -1,39 +1,59 @@
-use std::io;
-
+mod io_reader;
 mod solver;
 pub mod util;
 
 
 
+use io_reader::IOReader;
+
+
+
 fn main() {
-	let stdin = io::stdin();
+	// let stdin = io::stdin();
 
-	let mut input = String::new();
+	// let mut input_digits = String::new();
 
-	println!("Enter your digits, space-seperated: ");
+	// print!("Enter your digits, space-seperated: ");
+
+	// io::Write::flush(&mut io::stdout());
+
+	let mut io_reader = IOReader::new();
+
+	let input_digits = io_reader.read("Enter your digits, space-seperated: ");
 
 
-	stdin
-		.read_line(&mut input)
-		.expect("should've been able to read line!");
-
-
-	let mut input = input
+	let input_digits = input_digits
 		.trim() // clean up new lines
 		.split(" ") // split by character
 		.filter(|char| *char != "") // filter out empty characters because they're there
 		.map(|char| char.parse::<u8>()) // parse character into u8
-		.map(|num| num.unwrap_or(255)) // parse returns result, unwrap. if unvalid, set to 255
+		.map(|num| num.unwrap_or(255)) // parse returns Result, unwrap. if unvalid, set to 255
 		.filter(|num| *num < 10) // clean up values marked as invalid
 		.collect::<Vec<u8>>(); // collect to vector
 
 
-	if input.len() != 4 {
+	if input_digits.len() != 4 {
 		panic!("Invalid input!");
 	}
 
 
-	let solution = solver::brute_force(&mut input);
+	// let available_operations = io_reader.read("Enter available operations, or leave blank for all: ");
+
+	// let available_operations = available_operations
+	// 	.trim()
+	// 	.split("")
+	// 	.collect::<Vec<&str>>();
+
+	// dbg!(available_operations);
+
+
+	// let available_operations = vec![Operation::Add, Operation::Subtract, Operation::Multiply, Operation::Divide, Operation::Parentheses];
+	// let available_operations = vec![String::from("+"), String::from("-"), String::from("*"), String::from("/"), String::from("()")];
+	let available_operations = String::from("+-*/");
+
+
+	let solution = solver::brute_force(input_digits, available_operations);
+
 
 	if solution.is_empty() {
 		println!("No solution found!");

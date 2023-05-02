@@ -4,16 +4,18 @@ use super::operator_permutator::OperatorPermutator;
 
 
 
-pub fn brute_force(input: &mut Vec<u8>) -> String {
-	let permutations = generate_permutations(input);
-
+pub fn brute_force(mut input: Vec<u8>, available_operations: String) -> String {
 	let input_len = input.len();
+
+	let permutations = generate_permutations(&mut input);
+
+	let mut operator_permutator = OperatorPermutator::new(available_operations, input_len - 1);
 
 	let mut output = String::new();
 
 	// attempt to solve without parentheses
 	'permutation_loop: for permutation in permutations.iter() {
-		let mut operator_permutator = OperatorPermutator::new(String::from("+-*/"), input_len - 1);
+		operator_permutator.reset();
 
 		'operation_loop: loop {
 			let mut expression = String::new();
@@ -39,11 +41,10 @@ pub fn brute_force(input: &mut Vec<u8>) -> String {
 
 			operator_permutator.increment();
 
-			let exhausted_all_permutations = operator_permutator.is_maxed();
-
-			if exhausted_all_permutations == true {
+			if operator_permutator.is_maxed == true {
 				// worked through every operator combination; run the loop again
 				// this is equivalent to continue 'permutation loop but just for clarity
+
 				break 'operation_loop;
 			}
 		}
@@ -98,9 +99,9 @@ fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 #[cfg(test)]
 #[test]
 fn test_brute_forcer() {
-	let computation_1 = brute_force(&mut vec![8, 2, 7, 1]);
+	let computation_1 = brute_force(vec![8, 2, 7, 1], String::from("+-*/"));
 	assert_eq!(evaluator::evaluate(computation_1), 10f32);
 
-	let computation_2 = brute_force(&mut vec![5, 1, 6, 3]);
+	let computation_2 = brute_force(vec![5, 1, 6, 3], String::from("+-*/"));
 	assert_eq!(evaluator::evaluate(computation_2), 10f32);
 }

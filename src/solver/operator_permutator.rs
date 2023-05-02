@@ -1,7 +1,8 @@
+#[derive(Debug)]
 pub struct OperatorPermutator {
 	state: Vec<u8>,
 	state_length: usize,
-	is_maxed: bool,
+	pub is_maxed: bool,
 
 	operators: Vec<String>,
 	num_operators: usize
@@ -45,6 +46,7 @@ impl OperatorPermutator {
 			let operator = self.state[i];
 
 			// operator is above max value, wrap it
+
 			if operator == self.num_operators as u8 {
 				self.state[i] = 0;
 
@@ -60,8 +62,12 @@ impl OperatorPermutator {
 		}
 	}
 
-	pub fn is_maxed(&self) -> bool {
-		return self.is_maxed;
+	pub fn reset(&mut self) {
+		for i in 0..self.state_length {
+			self.state[i] = 0;
+		}
+
+		self.is_maxed = false;
 	}
 }
 
@@ -78,6 +84,3 @@ fn map_number_to_operator(number: u8) -> char {
 		_ => panic!("invalid number supplied to map_number_to_operator!")
 	};
 }
-
-
-
