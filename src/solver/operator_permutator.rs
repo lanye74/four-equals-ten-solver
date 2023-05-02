@@ -1,9 +1,10 @@
-#[derive(Debug)]
+// #[derive(Debug)]
 pub struct OperatorPermutator {
 	state: Vec<u8>,
 	state_length: usize,
 	pub is_maxed: bool,
 
+	#[allow(dead_code)]
 	operators: Vec<String>,
 	num_operators: usize
 }

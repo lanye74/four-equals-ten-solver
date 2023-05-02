@@ -9,14 +9,6 @@ use io_reader::IOReader;
 
 
 fn main() {
-	// let stdin = io::stdin();
-
-	// let mut input_digits = String::new();
-
-	// print!("Enter your digits, space-seperated: ");
-
-	// io::Write::flush(&mut io::stdout());
-
 	let mut io_reader = IOReader::new();
 
 	let input_digits = io_reader.read("Enter your digits, space-seperated: ");
