@@ -1,10 +1,10 @@
-pub mod brute_forcer;
+mod brute_forcer;
 pub use brute_forcer::brute_force;
 
 pub mod evaluator;
-pub use evaluator::evaluate;
 
-pub mod operator_permutator;
+mod operator_permutator;
+pub use operator_permutator::OperatorPermutator;
 
 pub mod tokenizer;
 pub use tokenizer::Token;

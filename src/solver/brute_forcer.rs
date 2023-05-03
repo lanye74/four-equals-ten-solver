@@ -1,6 +1,5 @@
 use crate::solver::evaluator;
-
-use super::operator_permutator::OperatorPermutator;
+use super::OperatorPermutator;
 
 
 

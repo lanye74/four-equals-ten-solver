@@ -2,8 +2,6 @@ mod io_reader;
 mod solver;
 pub mod util;
 
-
-
 use io_reader::IOReader;
 
 
@@ -41,6 +39,7 @@ fn main() {
 
 	// let available_operations = vec![Operation::Add, Operation::Subtract, Operation::Multiply, Operation::Divide, Operation::Parentheses];
 	// let available_operations = vec![String::from("+"), String::from("-"), String::from("*"), String::from("/"), String::from("()")];
+	// let available_operations = EnabledOperations {addition: true, subtraction: true, multiplication: true, division: true, parentheses: false};
 	let available_operations = String::from("+-*/");
 
 
