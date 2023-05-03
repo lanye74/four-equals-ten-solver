@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 // #[derive(Debug)]
 pub struct OperatorPermutator {
 	state: Vec<u8>,
@@ -5,26 +7,22 @@ pub struct OperatorPermutator {
 	pub is_maxed: bool,
 
 	#[allow(dead_code)]
-	operators: Vec<String>,
+	operator_mapper: OperatorMapper,
 	num_operators: usize
 }
 
 
 
 impl OperatorPermutator {
-	pub fn new(operators: String, length: usize) -> OperatorPermutator {
-		let operators = operators
-			.split("")
-			.filter(|x| *x != "")
-			.map(|x| x.to_owned())
-			.collect::<Vec<String>>();
+	pub fn new(enabled_operations: String, length: usize) -> OperatorPermutator {
+		let operator_mapper = OperatorMapper::new(enabled_operations);
 
 		return OperatorPermutator {
 			state_length: length,
 			state: vec![0; length],
 
-			num_operators: operators.len(),
-			operators,
+			num_operators: operator_mapper.len(),
+			operator_mapper,
 
 			is_maxed: false
 		};
@@ -39,7 +37,7 @@ impl OperatorPermutator {
 	}
 
 	pub fn get_operator_at(&self, i: usize) -> char {
-		return map_number_to_operator(self.state[i]);
+		return self.operator_mapper.map(self.state[i]);
 	}
 
 	fn wrap_values(&mut self) {
@@ -74,14 +72,34 @@ impl OperatorPermutator {
 
 
 
-// TODO: use hashmap
-fn map_number_to_operator(number: u8) -> char {
-	return match number {
-		0 => char::from('+'),
-		1 => char::from('-'),
-		2 => char::from('*'),
-		3 => char::from('/'),
+struct OperatorMapper {
+	map: HashMap<u8, char>
+}
 
-		_ => panic!("invalid number supplied to map_number_to_operator!")
-	};
+
+
+impl OperatorMapper {
+	pub fn new(enabled_operations: String) -> OperatorMapper {
+		let operations = enabled_operations
+			.chars()
+			.into_iter();
+
+		let mut map: HashMap<u8, char> = HashMap::new();
+
+		for (i, operation) in operations.enumerate() {
+			map.insert(i as u8, operation);
+		}
+
+		return OperatorMapper {
+			map
+		};
+	}
+
+	pub fn map(&self, i: u8) -> char {
+		return (*self.map.get(&i).unwrap()).clone();
+	}
+
+	pub fn len(&self) -> usize {
+		return self.map.len();
+	}
 }

@@ -1,8 +1,8 @@
 mod io_reader;
+use io_reader::IOReader;
+
 mod solver;
 pub mod util;
-
-use io_reader::IOReader;
 
 
 
