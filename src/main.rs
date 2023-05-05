@@ -45,7 +45,10 @@ fn main() {
 	let available_operations = String::from("+-*/");
 
 
-	let solutions = solver::brute_force(input_digits, available_operations, find_all_solutions);
+	let solve_with_parentheses = true;
+
+
+	let solutions = solver::brute_force(input_digits, available_operations, find_all_solutions, solve_with_parentheses);
 
 
 	if solutions.is_empty() {

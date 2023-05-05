@@ -3,7 +3,7 @@ use super::OperatorPermutator;
 
 
 
-pub fn brute_force(mut input: Vec<u8>, available_operations: String, find_all_solutions: bool) -> Vec<String> {
+pub fn brute_force(mut input: Vec<u8>, available_operations: String, find_all_solutions: bool, solve_with_parentheses: bool) -> Vec<String> {
 	let input_len = input.len();
 
 	let permutations = generate_permutations(&mut input);
@@ -54,7 +54,71 @@ pub fn brute_force(mut input: Vec<u8>, available_operations: String, find_all_so
 	}
 
 
+
+	if solve_with_parentheses == true {
+		// i may be atheist but god save me
+
+		// first step: figure out how to store parentheses locations
+
+		// [before] 0, [after] 1?
+		// (1+2)+3+4
+		// [before] 2, [after] 3
+		// 1+2+(3+4)
+		// this should be fine
+
+		// i need a struct to generate (0, 1) (0, 2) (1, 2) (0, 3) (1, 3) (2, 3) etc
+		// 'parentheses_loop: loop {
+		// 	'permutation_loop: for permutation in permutations.iter() {
+		// 		'operation_loop: loop {
+		// 			// kill me
+
+
+		// 		}
+		// 	}
+		// }
+	}
+
+
+
+
 	return output;
+}
+
+
+
+struct ParenthesesPermutator {
+	lparen_pos: usize,
+	rparen_pos: usize,
+
+	input_length: usize,
+	pub is_maxed: bool
+}
+
+
+
+impl ParenthesesPermutator {
+	pub fn new(input_length: usize) -> ParenthesesPermutator {
+		return ParenthesesPermutator {
+			lparen_pos: 0,
+			rparen_pos: 1,
+
+			input_length,
+			is_maxed: false
+		};
+	}
+
+	pub fn increment(&mut self) {
+		self.lparen_pos += 1;
+
+		if self.lparen_pos == self.rparen_pos {
+			self.lparen_pos = 0;
+			self.rparen_pos += 1;
+
+			if self.rparen_pos == self.input_length {
+				self.is_maxed = true;
+			}
+		}
+	}
 }
 
 
@@ -102,9 +166,9 @@ fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 #[cfg(test)]
 #[test]
 fn test_brute_forcer() {
-	let computation_1 = brute_force(vec![8, 2, 7, 1], String::from("+-*/"), false);
+	let computation_1 = brute_force(vec![8, 2, 7, 1], String::from("+-*/"), false, false);
 	assert_eq!(evaluator::evaluate(computation_1[0].clone()), 10f32);
 
-	let computation_2 = brute_force(vec![5, 1, 6, 3], String::from("+-*/"), false);
+	let computation_2 = brute_force(vec![5, 1, 6, 3], String::from("+-*/"), false, false);
 	assert_eq!(evaluator::evaluate(computation_2[0].clone()), 10f32);
 }
