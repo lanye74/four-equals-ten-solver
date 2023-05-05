@@ -30,7 +30,7 @@ fn main() {
 	let find_all_solutions = io_reader.read("Do you want to find all solutions? Y/N: ");
 	let find_all_solutions = find_all_solutions.trim().to_ascii_lowercase();
 
-	let find_all = match find_all_solutions.as_str() {
+	let find_all_solutions = match find_all_solutions.as_str() {
 		"y" => true,
 		"n" => false,
 		_ => panic!("Invalid input!")
@@ -45,7 +45,7 @@ fn main() {
 	let available_operations = String::from("+-*/");
 
 
-	let solutions = solver::brute_force(input_digits, available_operations, find_all);
+	let solutions = solver::brute_force(input_digits, available_operations, find_all_solutions);
 
 
 	if solutions.is_empty() {
