@@ -3,14 +3,15 @@ use super::OperatorPermutator;
 
 
 
-pub fn brute_force(mut input: Vec<u8>, available_operations: String) -> String {
+pub fn brute_force(mut input: Vec<u8>, available_operations: String, find_all_solutions: bool) -> Vec<String> {
 	let input_len = input.len();
 
 	let permutations = generate_permutations(&mut input);
 
 	let mut operator_permutator = OperatorPermutator::new(available_operations, input_len - 1);
 
-	let mut output = String::new();
+	let mut output = vec![];
+
 
 	// attempt to solve without parentheses
 	'permutation_loop: for permutation in permutations.iter() {
@@ -33,8 +34,11 @@ pub fn brute_force(mut input: Vec<u8>, available_operations: String) -> String {
 
 			if result == 10f32 {
 				// winner found!
-				output = expression;
-				break 'permutation_loop;
+				output.push(expression);
+
+				if find_all_solutions == false {
+					break 'permutation_loop;
+				}
 			}
 
 
@@ -66,7 +70,7 @@ fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 
 	let mut i = 1;
 
-	// quite honestly i have no idea how this works i just ripped it from wikipedia
+	// quite honestly i have no idea how this works i just ripped it from wikipedia (heap's algorithm)
 	while i < len {
 		if state[i] < i {
 			if i % 2 == 0 {
@@ -98,9 +102,9 @@ fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 #[cfg(test)]
 #[test]
 fn test_brute_forcer() {
-	let computation_1 = brute_force(vec![8, 2, 7, 1], String::from("+-*/"));
-	assert_eq!(evaluator::evaluate(computation_1), 10f32);
+	let computation_1 = brute_force(vec![8, 2, 7, 1], String::from("+-*/"), false);
+	assert_eq!(evaluator::evaluate(computation_1[0].clone()), 10f32);
 
-	let computation_2 = brute_force(vec![5, 1, 6, 3], String::from("+-*/"));
-	assert_eq!(evaluator::evaluate(computation_2), 10f32);
+	let computation_2 = brute_force(vec![5, 1, 6, 3], String::from("+-*/"), false);
+	assert_eq!(evaluator::evaluate(computation_2[0].clone()), 10f32);
 }

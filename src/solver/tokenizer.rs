@@ -16,35 +16,36 @@ pub enum Token {
 
 pub fn tokenize(input: String) -> Vec<Token> {
 	// this function assumes that any numbers input are positive single-digit integers, which is true for 4=10
+	// if i was writing a tokenizer for more complex inputs, we might have issues
+	// such is not the case : )
+	let characters = input.chars();
 
-	let characters = input
-		.split("")
-		.filter(|char| *char != "");
-
-
-	let mut token_output: Vec<Token> = Vec::new();
+	let mut output: Vec<Token> = Vec::new();
 
 	for (_index, character) in characters.enumerate() {
 		let token = map_to_token(character);
-		token_output.push(token);
+		output.push(token);
 	}
 
-	return token_output;
+	return output;
 }
 
 
 
-pub fn map_to_token(character: &str) -> Token {
+pub fn map_to_token(character: char) -> Token {
 	return match character {
-		"+" => Token::Add,
-		"-" => Token::Subtract,
-		"*" => Token::Multiply,
-		"/" => Token::Divide,
-		"(" => Token::LParen,
-		")" => Token::RParen,
+		'+' => Token::Add,
+		'-' => Token::Subtract,
+		'*' => Token::Multiply,
+		'/' => Token::Divide,
+		'(' => Token::LParen,
+		')' => Token::RParen,
 
 		other => {
-			return Token::Number(other.parse::<f32>().expect("token mapper received invalid input!"));
+			// return Token::Number((other.to_digit() as f32)
+			return Token::Number(char::to_digit(other, 10)
+				.expect("token mapper received invalid input!") as f32
+			);
 		}
 	};
 }
@@ -67,9 +68,9 @@ fn test_tokenizer() {
 	];
 
 
-	let is_equal = util::vecs_are_equal(result, expected);
+	let are_equal = util::vecs_are_equal(result, expected);
 
-	if is_equal == false {
+	if are_equal == false {
 		panic!("tokenization does not match expected!");
 	}
 }

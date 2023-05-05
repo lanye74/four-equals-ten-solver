@@ -52,6 +52,6 @@ pub fn find_token_in_range(vec: &Vec<Token>, token: Token, lower_bound: usize, u
 pub fn unwrap_token(number: &Token) -> f32 {
 	return match number {
 		Token::Number(value) => *value,
-		_ => panic!("value_from_token called with non-number!")
+		_ => panic!("unwrap_token called with non-number!")
 	};
 }

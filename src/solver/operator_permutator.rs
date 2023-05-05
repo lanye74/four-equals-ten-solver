@@ -29,7 +29,7 @@ impl OperatorPermutator {
 	}
 
 	// this boolean value returned indicates whether the state is "maxed" or not
-	// that is to say, whether OperatorPermutator::new(String::from("+-*/"), 4).state == vec![3, 3, 3, 3];
+	// that is to say, whether OperatorPermutator_instance.state == vec![3, 3, 3, 3];
 	pub fn increment(&mut self) {
 		self.state[0] += 1;
 

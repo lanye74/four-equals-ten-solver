@@ -9,7 +9,8 @@ pub mod util;
 fn main() {
 	let mut io_reader = IOReader::new();
 
-	let input_digits = io_reader.read("Enter your digits, space-seperated: ");
+	// this can literally be put in any format as long as there's 4 digits
+	let input_digits = io_reader.read("Enter your digits: ");
 
 	let input_digits = input_digits
 		.trim()
@@ -20,8 +21,20 @@ fn main() {
 
 
 	if input_digits.len() != 4 {
-		panic!("Invalid input!");
+		panic!("{} digits!",
+			if input_digits.len() < 4 {"Not enough"} else {"Too many"}
+		);
 	}
+
+
+	let find_all_solutions = io_reader.read("Do you want to find all solutions? Y/N: ");
+	let find_all_solutions = find_all_solutions.trim().to_ascii_lowercase();
+
+	let find_all = match find_all_solutions.as_str() {
+		"y" => true,
+		"n" => false,
+		_ => panic!("Invalid input!")
+	};
 
 
 	// let available_operations = vec![Operation::Add, Operation::Subtract, Operation::Multiply, Operation::Divide, Operation::Parentheses];
@@ -32,12 +45,18 @@ fn main() {
 	let available_operations = String::from("+-*/");
 
 
-	let solution = solver::brute_force(input_digits, available_operations);
+	let solutions = solver::brute_force(input_digits, available_operations, find_all);
 
 
-	if solution.is_empty() {
+	if solutions.is_empty() {
 		println!("No solution found!");
 	} else {
-		println!("Solution found!: {}", solution);
+		println!("Solution{} found!:",
+			if solutions.len() > 1 {"s"} else {""}
+		);
+
+		for sol in solutions {
+			println!("{}", sol);
+		}
 	}
 }
