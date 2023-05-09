@@ -31,6 +31,11 @@ impl ParenthesesPermutator {
 				self.is_maxed = true;
 			}
 		}
+
+		// if self.lparen_pos == 0 && (self.rparen_pos == (self.input_length - 1)) {
+		// 	// for n = 4, this is (0, 3)
+		// 	self.increment();
+		// }
 	}
 
 	pub fn get_state(&self) -> (usize, usize) {

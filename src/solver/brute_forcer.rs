@@ -89,6 +89,7 @@ pub fn brute_force(mut input: Vec<u8>, available_operations: String, find_all_so
 						// HELP
 
 						if i == lparen_pos {
+							// me when 7 layers of nesting
 							expression_builder.push('(');
 						}
 
@@ -189,4 +190,11 @@ fn test_brute_forcer() {
 
 	let computation_2 = brute_force(vec![5, 1, 6, 3], String::from("+-*/"), false, false);
 	assert_eq!(evaluator::evaluate(computation_2[0].clone()), 10f32);
+
+	// with parentheses
+	let computation_3 = brute_force(vec![9, 9, 1, 1], String::from("+-*/"), false, true);
+	assert_eq!(evaluator::evaluate(computation_3[0].clone()), 10f32);
+
+	let computation_4 = brute_force(vec![5, 1, 1, 1], String::from("+-*/"), false, true);
+	assert_eq!(evaluator::evaluate(computation_4[0].clone()), 10f32);
 }
