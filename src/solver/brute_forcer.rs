@@ -1,12 +1,13 @@
 use crate::solver::evaluator;
 use super::OperatorPermutator;
+use super::ParenthesesPermutator;
 
 
 
 pub fn brute_force(mut input: Vec<u8>, available_operations: String, find_all_solutions: bool, solve_with_parentheses: bool) -> Vec<String> {
 	let input_len = input.len();
 
-	let permutations = generate_permutations(&mut input);
+	let number_permutations = generate_permutations(&mut input);
 
 	let mut operator_permutator = OperatorPermutator::new(available_operations, input_len - 1);
 
@@ -14,30 +15,33 @@ pub fn brute_force(mut input: Vec<u8>, available_operations: String, find_all_so
 
 
 	// attempt to solve without parentheses
-	'permutation_loop: for permutation in permutations.iter() {
+	#[allow(unused_labels)]
+	'number_permutations: for number_permutation in number_permutations.iter() {
 		operator_permutator.reset();
 
-		'operation_loop: loop {
-			let mut expression = String::new();
+		'operation_permutations: loop {
+			let mut expression_builder = String::new();
 
 			// build expression
 			for i in 0..input_len {
-				expression.push(char::from_digit(permutation[i] as u32, 10).unwrap());
+				expression_builder.push(char::from_digit(number_permutation[i] as u32, 10).unwrap());
 
 				// ensures that a dangling operator isn't placed
 				if i != input_len - 1 {
-					expression.push(operator_permutator.get_operator_at(i));
+					expression_builder.push(*operator_permutator.get_operator_at(i));
 				}
 			}
 
-			let result = evaluator::evaluate(expression.clone());
+			let result = evaluator::evaluate(expression_builder.clone());
 
 			if result == 10f32 {
 				// winner found!
-				output.push(expression);
+				output.push(expression_builder);
 
 				if find_all_solutions == false {
-					break 'permutation_loop;
+					// break 'number_permutations;
+
+					return output;
 				}
 			}
 
@@ -48,7 +52,7 @@ pub fn brute_force(mut input: Vec<u8>, available_operations: String, find_all_so
 				// worked through every operator combination; run the loop again
 				// this is equivalent to continue 'permutation loop but just for clarity
 
-				break 'operation_loop;
+				break 'operation_permutations;
 			}
 		}
 	}
@@ -66,59 +70,73 @@ pub fn brute_force(mut input: Vec<u8>, available_operations: String, find_all_so
 		// 1+2+(3+4)
 		// this should be fine
 
-		// i need a struct to generate (0, 1) (0, 2) (1, 2) (0, 3) (1, 3) (2, 3) etc
-		// 'parentheses_loop: loop {
-		// 	'permutation_loop: for permutation in permutations.iter() {
-		// 		'operation_loop: loop {
-		// 			// kill me
+		let mut parentheses_permutator = ParenthesesPermutator::new(input_len);
+
+		// technically redundant but it makes me feel better
+		operator_permutator.reset();
+
+		'parentheses_permutations: loop {
+			let (lparen_pos, rparen_pos) = parentheses_permutator.get_state();
+
+			#[allow(unused_labels)]
+			'number_permutations: for number_permutation in number_permutations.iter() {
+				operator_permutator.reset();
+
+				'operation_permutations: loop {
+					let mut expression_builder = String::new();
+
+					for i in 0..input_len {
+						// HELP
+
+						if i == lparen_pos {
+							expression_builder.push('(');
+						}
+
+						expression_builder.push(char::from_digit(number_permutation[i] as u32, 10).unwrap());
+
+						if i == rparen_pos {
+							expression_builder.push(')');
+						}
 
 
-		// 		}
-		// 	}
-		// }
+						if i != input_len - 1 {
+							expression_builder.push(*operator_permutator.get_operator_at(i));
+						}
+					}
+
+
+					// h
+					let result = evaluator::evaluate(expression_builder.clone());
+
+					if result == 10f32 {
+						output.push(expression_builder);
+
+						if find_all_solutions == false {
+							return output;
+						}
+					}
+
+
+					operator_permutator.increment();
+
+					if operator_permutator.is_maxed == true {
+						break 'operation_permutations;
+					}
+				}
+			}
+
+
+			parentheses_permutator.increment();
+
+			if parentheses_permutator.is_maxed == true {
+				break 'parentheses_permutations;
+			}
+		}
 	}
-
 
 
 
 	return output;
-}
-
-
-
-struct ParenthesesPermutator {
-	lparen_pos: usize,
-	rparen_pos: usize,
-
-	input_length: usize,
-	pub is_maxed: bool
-}
-
-
-
-impl ParenthesesPermutator {
-	pub fn new(input_length: usize) -> ParenthesesPermutator {
-		return ParenthesesPermutator {
-			lparen_pos: 0,
-			rparen_pos: 1,
-
-			input_length,
-			is_maxed: false
-		};
-	}
-
-	pub fn increment(&mut self) {
-		self.lparen_pos += 1;
-
-		if self.lparen_pos == self.rparen_pos {
-			self.lparen_pos = 0;
-			self.rparen_pos += 1;
-
-			if self.rparen_pos == self.input_length {
-				self.is_maxed = true;
-			}
-		}
-	}
 }
 
 

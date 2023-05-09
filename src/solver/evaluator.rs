@@ -114,7 +114,16 @@ fn remove_parentheses(input: &mut Vec<Token>) {
 	let lparen_pos = find_token(input, Token::LParen);
 	let rparen_pos = find_token(input, Token::RParen);
 
-	let before_paren = &input[0..=(lparen_pos - 1)];
+
+	let before_paren;
+
+	if lparen_pos != 0 {
+		before_paren =  &input[0..=(lparen_pos - 1)];
+	} else {
+		// throws a hissy fit if paren is at 0
+		before_paren = &input[0..0];
+	}
+
 	let paren_contents = &input[(lparen_pos + 1)..=(rparen_pos - 1)];
 	let after_paren = &input[(rparen_pos + 1)..input_len];
 

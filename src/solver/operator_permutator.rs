@@ -36,7 +36,7 @@ impl OperatorPermutator {
 		self.wrap_values();
 	}
 
-	pub fn get_operator_at(&self, i: usize) -> char {
+	pub fn get_operator_at(&self, i: usize) -> &char {
 		return self.operator_mapper.map(self.state[i]);
 	}
 
@@ -62,9 +62,12 @@ impl OperatorPermutator {
 	}
 
 	pub fn reset(&mut self) {
-		for i in 0..self.state_length {
-			self.state[i] = 0;
-		}
+		// for i in 0..self.state_length {
+		//	self.state[i] = 0;
+		// }
+
+
+		self.state = vec![0; self.state_length];
 
 		self.is_maxed = false;
 	}
@@ -95,8 +98,9 @@ impl OperatorMapper {
 		};
 	}
 
-	pub fn map(&self, i: u8) -> char {
-		return (*self.map.get(&i).unwrap()).clone();
+	pub fn map(&self, i: u8) -> &char {
+		// char implements copy trait. no need to clone
+		return self.map.get(&i).unwrap();
 	}
 
 	pub fn len(&self) -> usize {
