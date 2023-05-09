@@ -34,7 +34,7 @@ pub fn brute_force(mut input: Vec<u8>, available_operations: String, find_all_so
 
 			let result = evaluator::evaluate(expression_builder.clone());
 
-			if result == 10f32 {
+			if result == 10.0 {
 				// winner found!
 				output.push(expression_builder);
 
@@ -109,7 +109,7 @@ pub fn brute_force(mut input: Vec<u8>, available_operations: String, find_all_so
 					// h
 					let result = evaluator::evaluate(expression_builder.clone());
 
-					if result == 10f32 {
+					if result == 10.0 {
 						output.push(expression_builder);
 
 						if find_all_solutions == false {
@@ -186,15 +186,15 @@ fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 #[test]
 fn test_brute_forcer() {
 	let computation_1 = brute_force(vec![8, 2, 7, 1], String::from("+-*/"), false, false);
-	assert_eq!(evaluator::evaluate(computation_1[0].clone()), 10f32);
+	assert_eq!(evaluator::evaluate(computation_1[0].clone()), 10.0);
 
 	let computation_2 = brute_force(vec![5, 1, 6, 3], String::from("+-*/"), false, false);
-	assert_eq!(evaluator::evaluate(computation_2[0].clone()), 10f32);
+	assert_eq!(evaluator::evaluate(computation_2[0].clone()), 10.0);
 
 	// with parentheses
 	let computation_3 = brute_force(vec![9, 9, 1, 1], String::from("+-*/"), false, true);
-	assert_eq!(evaluator::evaluate(computation_3[0].clone()), 10f32);
+	assert_eq!(evaluator::evaluate(computation_3[0].clone()), 10.0);
 
 	let computation_4 = brute_force(vec![5, 1, 1, 1], String::from("+-*/"), false, true);
-	assert_eq!(evaluator::evaluate(computation_4[0].clone()), 10f32);
+	assert_eq!(evaluator::evaluate(computation_4[0].clone()), 10.0);
 }

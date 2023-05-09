@@ -159,10 +159,13 @@ fn evaluate_expression(operation: &Token, operand_one: &Token, operand_two: &Tok
 #[test]
 fn test_evaluator() {
 	// basic checks
-	assert_eq!(evaluate(String::from("7*3-(1-3)")), 23f32);
+	assert_eq!(evaluate(String::from("7*3-(1-3)")), 23.0);
 	assert_eq!(evaluate(String::from("4/0+1*2")), f32::INFINITY);
 
 	// pemdas
-	assert_eq!(evaluate(String::from("4+3*2")), 10f32);
-	assert_eq!(evaluate(String::from("3-2-6*6/3")), -11f32);
+	assert_eq!(evaluate(String::from("4+3*2")), 10.0);
+	assert_eq!(evaluate(String::from("3-2-6*6/3")), -11.0);
+
+	// the parentheses bug i never caught
+	assert_eq!(evaluate(String::from("(2+2)+3")), 7.0)
 }
