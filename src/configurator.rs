@@ -17,17 +17,17 @@ impl Configurator {
 
 	pub fn build_config(&mut self) -> Config {
 		let input_digits = self.get_input_digits();
-		let allowed_operations = self.get_allowed_operations();
+		let enabled_operations = self.get_enabled_operations();
 
 		let find_all_solutions = self.get_find_all_solutions();
-		let use_parentheses = self.get_use_parentheses();
+		let solve_with_parentheses = self.get_solve_with_parentheses();
 
 		return Config {
 			input_digits,
-			allowed_operations,
+			enabled_operations,
 
 			find_all_solutions,
-			use_parentheses
+			solve_with_parentheses
 		};
 	}
 
@@ -44,7 +44,7 @@ impl Configurator {
 		return input_digits;
 	}
 
-	fn get_allowed_operations(&mut self) -> String {
+	fn get_enabled_operations(&mut self) -> String {
 		let result = self.io_reader.read("Enter your available operations, not including parentheses: ");
 
 		let result = result
@@ -62,17 +62,18 @@ impl Configurator {
 		return self.io_reader.yn_prompt("Do you want to find all solutions? Y/N: ");
 	}
 
-	fn get_use_parentheses(&mut self) -> bool {
+	fn get_solve_with_parentheses(&mut self) -> bool {
 		return self.io_reader.yn_prompt("Do you want to find solutions with parentheses? Y/N: ");
 	}
 }
 
 
 
+#[derive(Clone)]
 pub struct Config {
 	pub input_digits: Vec<u8>,
-	pub allowed_operations: String,
+	pub enabled_operations: String,
 
 	pub find_all_solutions: bool,
-	pub use_parentheses: bool
+	pub solve_with_parentheses: bool
 }

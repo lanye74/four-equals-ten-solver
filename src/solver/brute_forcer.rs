@@ -1,15 +1,25 @@
+use crate::configurator::Config;
 use crate::solver::evaluator;
 use super::OperatorPermutator;
 use super::ParenthesesPermutator;
 
 
+pub fn brute_force(config: Config) -> Vec<String> {
+	// destructure
+	let Config {
+		input_digits: mut input,
+		enabled_operations,
 
-pub fn brute_force(mut input: Vec<u8>, available_operations: String, find_all_solutions: bool, solve_with_parentheses: bool) -> Vec<String> {
+		find_all_solutions,
+		solve_with_parentheses
+	} = config;
+
+
 	let input_len = input.len();
 
 	let number_permutations = generate_permutations(&mut input);
 
-	let mut operator_permutator = OperatorPermutator::new(available_operations, input_len - 1);
+	let mut operator_permutator = OperatorPermutator::new(enabled_operations, input_len - 1);
 
 	let mut output = vec![];
 
@@ -185,16 +195,54 @@ fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 #[cfg(test)]
 #[test]
 fn test_brute_forcer() {
-	let computation_1 = brute_force(vec![8, 2, 7, 1], String::from("+-*/"), false, false);
+	let config_1 = Config {
+		input_digits: vec![8, 2, 7, 1],
+		enabled_operations: String::from("+-*/"),
+
+		find_all_solutions: false,
+		solve_with_parentheses: false
+	};
+
+
+	let computation_1 = brute_force(config_1);
 	assert_eq!(evaluator::evaluate(computation_1[0].clone()), 10.0);
 
-	let computation_2 = brute_force(vec![5, 1, 6, 3], String::from("+-*/"), false, false);
+
+	let config_2 = Config {
+		input_digits: vec![5, 1, 6, 3],
+		enabled_operations: String::from("+-*/"),
+
+		find_all_solutions: false,
+		solve_with_parentheses: false
+	};
+
+	let computation_2 = brute_force(config_2);
 	assert_eq!(evaluator::evaluate(computation_2[0].clone()), 10.0);
 
+
+
 	// with parentheses
-	let computation_3 = brute_force(vec![9, 9, 1, 1], String::from("+-*/"), false, true);
+
+	let config_3 = Config {
+		input_digits: vec![9, 9, 1, 1],
+		enabled_operations: String::from("+-*/"),
+
+		find_all_solutions: false,
+		solve_with_parentheses: true
+	};
+
+	let computation_3 = brute_force(config_3);
 	assert_eq!(evaluator::evaluate(computation_3[0].clone()), 10.0);
 
-	let computation_4 = brute_force(vec![5, 1, 1, 1], String::from("+-*/"), false, true);
+
+	let config_4 = Config {
+		input_digits: vec![5, 1, 1, 1],
+		enabled_operations: String::from("+-*/"),
+
+		find_all_solutions: false,
+		solve_with_parentheses: true
+	};
+
+	let computation_4 = brute_force(config_4);
 	assert_eq!(evaluator::evaluate(computation_4[0].clone()), 10.0);
 }
