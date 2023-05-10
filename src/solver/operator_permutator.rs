@@ -83,11 +83,11 @@ impl OperatorMapper {
 	pub fn new(enabled_operations: String) -> OperatorMapper {
 		let operations = enabled_operations
 			.chars()
-			.into_iter();
+			.enumerate();
 
 		let mut map: HashMap<u8, char> = HashMap::new();
 
-		for (i, operation) in operations.enumerate() {
+		for (i, operation) in operations {
 			map.insert(i as u8, operation);
 		}
 

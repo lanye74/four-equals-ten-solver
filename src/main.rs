@@ -1,10 +1,41 @@
 mod io_reader;
-use io_reader::IOReader;
+mod configurator;
+
+use configurator::Configurator;
 
 mod solver;
 
 
 
+fn main() {
+	let mut configurator = Configurator::new();
+
+	let config = configurator.build_config();
+
+	// let solutions = solver::brute_force(config);
+
+
+
+	// if solutions.is_empty() {
+	// 	println!("No solutions found!");
+	// } else {
+	// 	println!("Solution{} found!:",
+	// 		if solutions.len() > 1 {"s"} else {""}
+	// 	);
+
+	// 	for sol in solutions {
+	// 		println!("{}", sol);
+	// 	}
+
+	// 	if config.find_all_solutions == true {
+	// 		println!("Total: {}", solutions.len());
+	// 	}
+	// }
+}
+
+
+
+/*
 fn main() {
 	let mut io_reader = IOReader::new();
 
@@ -41,7 +72,7 @@ fn main() {
 	// let available_operations = EnabledOperations {addition: true, subtraction: true, multiplication: true, division: true, parentheses: false};
 
 	// test value for available_operations: 3 1 3 4
-	let available_operations = String::from("+-*/");
+	let available_operations = String::from("+*-/");
 
 
 	let solve_with_parentheses = true;
@@ -62,6 +93,7 @@ fn main() {
 		}
 	}
 }
+*/
 
 
 

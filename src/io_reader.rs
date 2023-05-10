@@ -32,7 +32,7 @@ impl IOReader {
 	}
 
 	#[allow(dead_code)]
-	fn read_line(&self, prompt: &'static str) -> String {
+	pub fn read_line(&self, prompt: &'static str) -> String {
 		let mut buffer = String::new();
 
 		println!("{}", prompt);
@@ -43,5 +43,20 @@ impl IOReader {
 
 		return buffer;
 
+	}
+}
+
+
+
+// extension methods of read and read_line
+impl IOReader {
+	pub fn yn_prompt(&mut self, prompt: &'static str) -> bool {
+		let result = self.read(prompt);
+
+		return match result.trim().to_ascii_lowercase().as_str() {
+			"y" => true,
+			"n" => false,
+			_ => panic!("Invalid input!")
+		};
 	}
 }
