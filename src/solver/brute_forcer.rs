@@ -38,7 +38,7 @@ pub fn brute_force(config: Config) -> Vec<String> {
 
 				// ensures that a dangling operator isn't placed
 				if i != input_len - 1 {
-					expression_builder.push(*operator_permutator.get_operator_at(i));
+					expression_builder.push(operator_permutator.get_operator_at(i));
 				}
 			}
 
@@ -111,7 +111,7 @@ pub fn brute_force(config: Config) -> Vec<String> {
 
 
 						if i != input_len - 1 {
-							expression_builder.push(*operator_permutator.get_operator_at(i));
+							expression_builder.push(operator_permutator.get_operator_at(i));
 						}
 					}
 

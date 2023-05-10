@@ -1,6 +1,6 @@
 mod io_reader;
-mod configurator;
 
+mod configurator;
 use configurator::Configurator;
 
 mod solver;

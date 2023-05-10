@@ -1,6 +1,6 @@
 #[derive(PartialEq)]
 #[derive(Clone)]
-#[derive(Debug)]
+// #[derive(Debug)]
 pub enum Token {
 	Add,
 	Subtract,
@@ -32,7 +32,7 @@ pub fn tokenize(input: String) -> Vec<Token> {
 
 
 
-pub fn map_to_token(character: char) -> Token {
+fn map_to_token(character: char) -> Token {
 	return match character {
 		'+' => Token::Add,
 		'-' => Token::Subtract,

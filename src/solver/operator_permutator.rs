@@ -36,8 +36,8 @@ impl OperatorPermutator {
 		self.wrap_values();
 	}
 
-	pub fn get_operator_at(&self, i: usize) -> &char {
-		return self.operator_mapper.map(self.state[i]);
+	pub fn get_operator_at(&self, i: usize) -> char {
+		return *self.operator_mapper.map(self.state[i]);
 	}
 
 	fn wrap_values(&mut self) {
