@@ -42,8 +42,7 @@ pub fn map_to_token(character: char) -> Token {
 		')' => Token::RParen,
 
 		other => {
-			// return Token::Number((other.to_digit() as f32)
-			return Token::Number(char::to_digit(other, 10)
+			return Token::Number(other.to_digit(10)
 				.expect("token mapper received invalid input!") as f32
 			);
 		}
@@ -55,7 +54,22 @@ pub fn map_to_token(character: char) -> Token {
 #[cfg(test)]
 #[test]
 fn test_tokenizer() {
-	use crate::util;
+	fn vecs_are_equal<T: std::cmp::PartialEq>(vec1: Vec<T>, vec2: Vec<T>) -> bool {
+		if vec1.len() != vec2.len() {
+			return false;
+		}
+
+		let len = vec1.len();
+
+		for i in 0..len {
+			if vec1[i] != vec2[i] {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 
 	let result = tokenize(String::from("(3*5)/7+0-1*2*9/(8+4)*6"));
 
@@ -68,7 +82,7 @@ fn test_tokenizer() {
 	];
 
 
-	let are_equal = util::vecs_are_equal(result, expected);
+	let are_equal = vecs_are_equal(result, expected);
 
 	if are_equal == false {
 		panic!("tokenization does not match expected!");

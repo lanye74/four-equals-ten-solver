@@ -45,7 +45,6 @@ impl OperatorPermutator {
 			let operator = self.state[i];
 
 			// operator is above max value, wrap it
-
 			if operator == self.num_operators as u8 {
 				self.state[i] = 0;
 
@@ -65,7 +64,6 @@ impl OperatorPermutator {
 		// for i in 0..self.state_length {
 		//	self.state[i] = 0;
 		// }
-
 
 		self.state = vec![0; self.state_length];
 
@@ -93,9 +91,7 @@ impl OperatorMapper {
 			map.insert(i as u8, operation);
 		}
 
-		return OperatorMapper {
-			map
-		};
+		return OperatorMapper {map};
 	}
 
 	pub fn map(&self, i: u8) -> &char {

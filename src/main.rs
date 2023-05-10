@@ -2,7 +2,6 @@ mod io_reader;
 use io_reader::IOReader;
 
 mod solver;
-pub mod util;
 
 
 
@@ -63,3 +62,14 @@ fn main() {
 		}
 	}
 }
+
+
+
+// #[allow(dead_code)]
+// struct Config {
+// 	digits: Vec<u8>,
+// 	operations: String,
+
+// 	find_all_solutions: bool,
+// 	solve_with_parentheses: bool
+// }

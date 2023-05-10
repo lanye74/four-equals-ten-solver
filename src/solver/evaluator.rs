@@ -1,4 +1,3 @@
-use crate::util::{unwrap_token, find_token, find_token_in_range};
 use super::tokenizer::{self, Token};
 
 
@@ -150,6 +149,43 @@ fn evaluate_expression(operation: &Token, operand_one: &Token, operand_two: &Tok
 		_ => {
 			panic!("invalid operation supplied to evaluate_expression!");
 		}
+	};
+}
+
+
+
+fn find_token(vec: &Vec<Token>, token: Token) -> usize {
+	for index in 0..(vec.len()) {
+		let element = &vec[index];
+
+		if *element == token {
+			return index;
+		}
+	}
+
+	return usize::MAX;
+}
+
+
+
+fn find_token_in_range(vec: &Vec<Token>, token: Token, lower_bound: usize, upper_bound: usize) -> usize {
+	for index in lower_bound..=upper_bound {
+		let element = &vec[index];
+
+		if *element == token {
+			return index;
+		}
+	}
+
+	return usize::MAX;
+}
+
+
+
+fn unwrap_token(number: &Token) -> f32 {
+	return match number {
+		Token::Number(value) => *value,
+		_ => panic!("unwrap_token called with non-number!")
 	};
 }
 
