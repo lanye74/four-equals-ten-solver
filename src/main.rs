@@ -1,3 +1,5 @@
+use std::time::{Instant};
+
 mod io_reader;
 
 mod configurator;
@@ -13,8 +15,10 @@ fn main() {
 	let config = configurator.build_config();
 	let config_clone = config.clone();
 
-	let solutions = solver::brute_force(config);
 
+	let start = Instant::now();
+	let solutions = solver::brute_force(config);
+	let elapsed = start.elapsed();
 
 
 	if solutions.is_empty() {
@@ -35,4 +39,8 @@ fn main() {
 			println!("Total: {}", solutions_len);
 		}
 	}
+
+
+	println!("Time taken: {:?}", elapsed);
+
 }

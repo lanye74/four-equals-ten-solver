@@ -32,9 +32,24 @@ impl ParenthesesPermutator {
 			}
 		}
 
-		// if self.lparen_pos == 0 && (self.rparen_pos == (self.input_length - 1)) {
-		// 	// for n = 4, this is (0, 3)
-		// 	self.increment();
+
+		// for n = 4, this condition triggers on (0, 3)
+		if self.lparen_pos == 0 && (self.rparen_pos == (self.input_length - 1)) {
+			self.increment();
+		}
+
+
+		// i could also have this generate (0, 0) (0, 1) (1, 0) (1, 1) ... (3, 3)... because those are all valid solutions too
+
+		// self.lparen_pos += 1;
+
+		// if self.lparen_pos > self.rparen_pos {
+		// 	self.lparen_pos = 0;
+		// 	self.rparen_pos += 1;
+
+		// 	if self.rparen_pos == self.input_length {
+		// 		self.is_maxed = true;
+		// 	}
 		// }
 	}
 

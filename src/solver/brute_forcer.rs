@@ -1,7 +1,10 @@
+use std::collections::HashSet;
+
 use crate::configurator::Config;
 use crate::solver::evaluator;
 use super::OperatorPermutator;
 use super::ParenthesesPermutator;
+
 
 
 pub fn brute_force(config: Config) -> Vec<String> {
@@ -153,39 +156,56 @@ pub fn brute_force(config: Config) -> Vec<String> {
 
 
 fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
-	let len = input.len();
+	let input_len = input.len();
 
 	let mut output: Vec<Vec<u8>> = vec![];
-	let mut state: Vec<usize> = vec![0; len];
+	let mut state: Vec<usize> = vec![0; input_len];
 
 
 	output.push(input.clone());
 
-	let mut i = 1;
+	let mut pointer = 1;
 
 	// quite honestly i have no idea how this works i just ripped it from wikipedia (heap's algorithm)
-	while i < len {
-		if state[i] < i {
-			if i % 2 == 0 {
-				input.swap(0, i);
+	while pointer < input_len {
+		if state[pointer] < pointer {
+			if pointer % 2 == 0 {
+				input.swap(0, pointer);
 			} else {
-				input.swap(state[i], i);
+				input.swap(state[pointer], pointer);
 			}
 
 			output.push(input.clone());
 
-			state[i] += 1;
+			state[pointer] += 1;
 
-			i = 1;
+			pointer = 1;
 		} else {
-			state[i] = 0;
-			i += 1;
+			state[pointer] = 0;
+			pointer += 1;
 		}
 	}
 
-	// TODO: check for duplicates in the input before doing this
-	output.sort();
-	output.dedup();
+
+	let mut set = HashSet::new();
+
+
+	for i in 0..input.len() {
+		if set.contains(&input[i]) {
+			break;
+		}
+
+		set.insert(input[i]);
+	}
+
+	// if there are duplicates in the input, they will not be present in the set
+	// or if broken early
+	if set.len() != input_len {
+
+		output.sort();
+		output.dedup();
+	}
+
 
 	return output;
 }

@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+
+
 // #[derive(Debug)]
 pub struct OperatorPermutator {
 	state: Vec<u8>,
