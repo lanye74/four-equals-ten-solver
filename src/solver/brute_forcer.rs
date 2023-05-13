@@ -20,6 +20,8 @@ pub fn brute_force(config: Config) -> Vec<String> {
 
 	let input_len = input.len();
 
+	println!("Generating permutations...");
+
 	let number_permutations = generate_permutations(&mut input);
 
 	let mut operator_permutator = OperatorPermutator::new(enabled_operations, input_len - 1);
@@ -28,6 +30,8 @@ pub fn brute_force(config: Config) -> Vec<String> {
 
 
 	// attempt to solve without parentheses
+	println!("Finding solutions{}", if solve_with_parentheses == false {"..."} else {" without parentheses..."});
+
 	#[allow(unused_labels)]
 	'number_permutations: for number_permutation in number_permutations.iter() {
 		operator_permutator.reset();
@@ -71,8 +75,9 @@ pub fn brute_force(config: Config) -> Vec<String> {
 	}
 
 
-
 	if solve_with_parentheses == true {
+		println!("Finding solutions with parentheses...");
+
 		// i may be atheist but god save me
 
 		// first step: figure out how to store parentheses locations
