@@ -19,12 +19,16 @@ impl Configurator {
 		let input_digits = self.get_input_digits();
 		let enabled_operations = self.get_enabled_operations();
 
+		let target_number = self.get_target_number();
+
 		let find_all_solutions = self.get_find_all_solutions();
 		let solve_with_parentheses = self.get_solve_with_parentheses();
 
 		return Config {
 			input_digits,
 			enabled_operations,
+
+			target_number,
 
 			find_all_solutions,
 			solve_with_parentheses
@@ -58,6 +62,10 @@ impl Configurator {
 		return result;
 	}
 
+	fn get_target_number(&mut self) -> f32 {
+		return self.io_reader.read_float_with_default("Enter your target number, or leave empty for 10: ", 10.0);
+	}
+
 	fn get_find_all_solutions(&mut self) -> bool {
 		return self.io_reader.yn_prompt("Do you want to find all solutions? Y/N: ");
 	}
@@ -73,6 +81,8 @@ impl Configurator {
 pub struct Config {
 	pub input_digits: Vec<u8>,
 	pub enabled_operations: String,
+
+	pub target_number: f32,
 
 	pub find_all_solutions: bool,
 	pub solve_with_parentheses: bool
