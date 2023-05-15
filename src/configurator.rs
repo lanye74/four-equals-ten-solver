@@ -49,8 +49,9 @@ impl Configurator {
 	}
 
 	fn get_enabled_operations(&mut self) -> String {
-		let result = self.io_reader.read("Enter your available operations, not including parentheses: ");
+		let result = self.io_reader.read_with_default("Enter your available non-parentheses operations, or leave blank for all: ", String::from("+-*/"));
 
+		// TODO: make trim a default part of io_reader?
 		let result = result
 			.trim()
 			.chars()

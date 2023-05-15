@@ -125,7 +125,6 @@ pub fn brute_force(config: Config) -> BruteForcerOutput {
 						// HELP
 
 						if i == lparen_pos {
-							// me when 7 layers of nesting
 							expression_builder.push('(');
 						}
 
@@ -150,6 +149,7 @@ pub fn brute_force(config: Config) -> BruteForcerOutput {
 
 						if find_all_solutions == false {
 							return BruteForcerOutput {
+								// me when 8 layers of nesting
 								solutions,
 								solutions_considered,
 
