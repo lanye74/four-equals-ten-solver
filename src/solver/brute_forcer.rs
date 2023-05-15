@@ -1,3 +1,4 @@
+use std::time::{Duration, Instant};
 use std::collections::HashSet;
 
 use crate::configurator::Config;
@@ -7,7 +8,10 @@ use super::ParenthesesPermutator;
 
 
 
-pub fn brute_force(config: Config) -> Vec<String> {
+pub fn brute_force(config: Config) -> BruteForcerOutput {
+	let starting_time = Instant::now();
+
+
 	// destructure
 	let Config {
 		input_digits: mut input,
@@ -27,7 +31,10 @@ pub fn brute_force(config: Config) -> Vec<String> {
 
 	let mut operator_permutator = OperatorPermutator::new(enabled_operations, input_len - 1);
 
-	let mut output = vec![];
+	let mut solutions = vec![];
+
+
+	let mut solutions_considered: u64 = 0;
 
 
 	// attempt to solve without parentheses
@@ -38,6 +45,9 @@ pub fn brute_force(config: Config) -> Vec<String> {
 		operator_permutator.reset();
 
 		'operation_permutations: loop {
+			solutions_considered += 1;
+
+
 			let mut expression_builder = String::new();
 
 			// build expression
@@ -54,12 +64,17 @@ pub fn brute_force(config: Config) -> Vec<String> {
 
 			if result == target_number {
 				// winner found!
-				output.push(expression_builder);
+				solutions.push(expression_builder);
 
 				if find_all_solutions == false {
 					// break 'number_permutations;
 
-					return output;
+					return BruteForcerOutput {
+						solutions,
+						solutions_considered,
+
+						time_taken: starting_time.elapsed()
+					};
 				}
 			}
 
@@ -102,6 +117,8 @@ pub fn brute_force(config: Config) -> Vec<String> {
 				operator_permutator.reset();
 
 				'operation_permutations: loop {
+					solutions_considered += 1;
+
 					let mut expression_builder = String::new();
 
 					for i in 0..input_len {
@@ -129,10 +146,15 @@ pub fn brute_force(config: Config) -> Vec<String> {
 					let result = evaluator::evaluate(expression_builder.clone());
 
 					if result == target_number {
-						output.push(expression_builder);
+						solutions.push(expression_builder);
 
 						if find_all_solutions == false {
-							return output;
+							return BruteForcerOutput {
+								solutions,
+								solutions_considered,
+
+								time_taken: starting_time.elapsed()
+							};
 						}
 					}
 
@@ -156,7 +178,12 @@ pub fn brute_force(config: Config) -> Vec<String> {
 
 
 
-	return output;
+	return BruteForcerOutput {
+		solutions,
+		solutions_considered,
+
+		time_taken: starting_time.elapsed()
+	};
 }
 
 
@@ -233,7 +260,7 @@ fn test_brute_forcer() {
 
 
 	let mut computation_1 = brute_force(config_1);
-	assert_eq!(evaluator::evaluate(computation_1.pop().unwrap()), 10.0);
+	assert_eq!(evaluator::evaluate(computation_1.solutions.pop().unwrap()), 10.0);
 
 
 	let config_2 = Config {
@@ -247,7 +274,7 @@ fn test_brute_forcer() {
 	};
 
 	let mut computation_2 = brute_force(config_2);
-	assert_eq!(evaluator::evaluate(computation_2.pop().unwrap()), 10.0);
+	assert_eq!(evaluator::evaluate(computation_2.solutions.pop().unwrap()), 10.0);
 
 
 
@@ -264,7 +291,7 @@ fn test_brute_forcer() {
 	};
 
 	let mut computation_3 = brute_force(config_3);
-	assert_eq!(evaluator::evaluate(computation_3.pop().unwrap()), 10.0);
+	assert_eq!(evaluator::evaluate(computation_3.solutions.pop().unwrap()), 10.0);
 
 
 	let config_4 = Config {
@@ -278,7 +305,7 @@ fn test_brute_forcer() {
 	};
 
 	let mut computation_4 = brute_force(config_4);
-	assert_eq!(evaluator::evaluate(computation_4.pop().unwrap()), 10.0);
+	assert_eq!(evaluator::evaluate(computation_4.solutions.pop().unwrap()), 10.0);
 
 
 	// with disabled operations
@@ -294,7 +321,7 @@ fn test_brute_forcer() {
 	};
 
 	let mut computation_5 = brute_force(config_5);
-	assert_eq!(evaluator::evaluate(computation_5.pop().unwrap()), 10.0);
+	assert_eq!(evaluator::evaluate(computation_5.solutions.pop().unwrap()), 10.0);
 
 
 	// with different target
@@ -310,5 +337,14 @@ fn test_brute_forcer() {
 	};
 
 	let mut computation_6 = brute_force(config_6);
-	assert_eq!(evaluator::evaluate(computation_6.pop().unwrap()), 11.0);
+	assert_eq!(evaluator::evaluate(computation_6.solutions.pop().unwrap()), 11.0);
+}
+
+
+
+pub struct BruteForcerOutput {
+	pub solutions: Vec<String>,
+	pub solutions_considered: u64,
+
+	pub time_taken: Duration
 }

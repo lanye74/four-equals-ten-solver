@@ -1,5 +1,3 @@
-use std::time::{Instant};
-
 mod io_reader;
 
 mod configurator;
@@ -16,22 +14,20 @@ fn main() {
 	let config_clone = config.clone();
 
 
-	let start = Instant::now();
-	let solutions = solver::brute_force(config);
-	let elapsed = start.elapsed();
+	let output = solver::brute_force(config);
 
 
-	if solutions.is_empty() {
+	if output.solutions.is_empty() {
 		println!("No solutions found!");
 	} else {
-		let solutions_len = solutions.len();
+		let solutions_len = output.solutions.len();
 
 
 		println!("Solution{} found!:",
 			if solutions_len > 1 {"s"} else {""}
 		);
 
-		for sol in solutions {
+		for sol in output.solutions {
 			println!("{}", sol);
 		}
 
@@ -41,6 +37,6 @@ fn main() {
 	}
 
 
-	println!("Time taken: {:?}", elapsed);
-
+	println!("Time taken: {:?}", output.time_taken);
+	println!("Solutions considered: {}", output.solutions_considered);
 }
