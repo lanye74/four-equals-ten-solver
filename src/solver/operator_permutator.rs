@@ -75,6 +75,23 @@ impl OperatorPermutator {
 
 
 
+impl Iterator for OperatorPermutator {
+	type Item = Vec<u8>;
+
+	fn next(&mut self) -> Option<Self::Item> {
+		self.increment();
+
+		// fix logic here
+		if self.is_maxed == false {
+			return Some(self.state.clone());
+		}
+
+		return None;
+	}
+}
+
+
+
 struct OperatorMapper {
 	map: HashMap<u8, char>
 }

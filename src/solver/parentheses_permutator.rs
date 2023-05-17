@@ -56,4 +56,10 @@ impl ParenthesesPermutator {
 	pub fn get_state(&self) -> (usize, usize) {
 		return (self.lparen_pos, self.rparen_pos);
 	}
+
+	#[allow(dead_code)]
+	pub fn reset(&mut self) {
+		self.lparen_pos = 0;
+		self.rparen_pos = 1;
+	}
 }

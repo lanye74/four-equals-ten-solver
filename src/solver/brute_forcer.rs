@@ -2,7 +2,7 @@ use std::time::{Duration, Instant};
 use std::collections::HashSet;
 
 use crate::configurator::Config;
-use crate::solver::evaluator;
+use super::evaluator;
 use super::OperatorPermutator;
 use super::ParenthesesPermutator;
 
