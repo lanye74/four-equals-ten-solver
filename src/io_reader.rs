@@ -28,7 +28,7 @@ impl IOReader {
 			.read_line(&mut buffer)
 			.expect("should've been able to read line!");
 
-		return buffer;
+		return buffer.trim().to_owned();
 	}
 
 	#[allow(dead_code)]
@@ -41,14 +41,11 @@ impl IOReader {
 			.read_line(&mut buffer)
 			.expect("should've been able to read line!");
 
-		return buffer;
-
+		return buffer.trim().to_owned();
 	}
 
 	pub fn read_with_default(&mut self, prompt: &'static str, default: String) -> String {
 		let result = self.read(prompt);
-
-		let result = result.trim().to_owned();
 
 		if result.is_empty() {
 			return default;
@@ -65,7 +62,7 @@ impl IOReader {
 	pub fn yn_prompt(&mut self, prompt: &'static str) -> bool {
 		let result = self.read(prompt);
 
-		return match result.trim().to_ascii_lowercase().as_str() {
+		return match result.to_ascii_lowercase().as_str() {
 			"y" => true,
 			"n" => false,
 			_ => panic!("Invalid input!")

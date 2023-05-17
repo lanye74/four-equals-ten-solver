@@ -39,7 +39,6 @@ impl Configurator {
 		let input_digits = self.io_reader.read("Enter your digits: ");
 
 		let input_digits = input_digits
-			.trim()
 			.chars()
 			.map(|char| char.to_digit(10).unwrap_or(255) as u8)
 			.filter(|num| *num < 10)
@@ -51,9 +50,7 @@ impl Configurator {
 	fn get_enabled_operations(&mut self) -> String {
 		let result = self.io_reader.read_with_default("Enter your available non-parentheses operations, or leave blank for all: ", String::from("+-*/"));
 
-		// TODO: make trim a default part of io_reader?
 		let result = result
-			.trim()
 			.chars()
 			.filter(|char| *char == '+' || *char == '-' || *char == '*' || *char == '/')
 			.into_iter()
