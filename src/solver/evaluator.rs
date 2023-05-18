@@ -2,8 +2,8 @@ use super::tokenizer::{self, Token};
 
 
 
-pub fn evaluate(input: String) -> f32 {
-	let mut tokens: Vec<Token> = tokenizer::tokenize(input);
+pub fn evaluate(expression: String) -> f32 {
+	let mut tokens: Vec<Token> = tokenizer::tokenize(expression);
 
 	// this function assumes there is only one set of parentheses, and that the input is valid
 	// i might write an input validator later. but for now

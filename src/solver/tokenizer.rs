@@ -14,11 +14,11 @@ pub enum Token {
 
 
 
-pub fn tokenize(input: String) -> Vec<Token> {
+pub fn tokenize(expression: String) -> Vec<Token> {
 	// this function assumes that any numbers input are positive single-digit integers, which is true for 4=10
 	// if i was writing a tokenizer for more complex inputs, we might have issues
 	// such is not the case : )
-	let characters = input.chars();
+	let characters = expression.chars();
 
 	let mut output: Vec<Token> = Vec::new();
 

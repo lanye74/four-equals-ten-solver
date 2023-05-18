@@ -32,35 +32,71 @@ pub fn brute_force(config: Config) -> BruteForcerOutput {
 	let mut solutions = vec![];
 	let mut solutions_considered: u64 = 0;
 
-	// attempt to solve without parentheses
-	println!("Finding solutions{}", if solve_with_parentheses == false {"..."} else {" without parentheses..."});
+	println!("Finding solutions...");
 
-	for number_permutation in number_permutations.iter() {
-		let operator_permutator_no_paren = OperatorPermutator::new(&enabled_operations, input_len - 1);
+	if solve_with_parentheses == false {
+		// n! permutations, assuming no duplicates
+		for number_permutation in number_permutations {
+			let operator_permutator = OperatorPermutator::new(&enabled_operations, input_len - 1);
 
-		for operator_permutation in operator_permutator_no_paren {
-			solutions_considered += 1;
+			// (# operators enabled)^n permutations
+			// for low values of n, this ordering of the loops is less efficient; but more efficient for higher values
+			for operator_permutation in operator_permutator {
+				solutions_considered += 1;
 
-			let mut expression_builder = String::new();
+				let expression = build_expression(&number_permutation, &operator_permutation, None, None);
 
-			// build expression
-			for i in 0..input_len {
-				expression_builder.push(char::from_digit(number_permutation[i] as u32, 10).unwrap());
+				let result = evaluator::evaluate(expression.clone());
 
-				// ensures that a dangling operator isn't placed
-				if i != input_len - 1 {
-					expression_builder.push(operator_permutation[i]);
+				if result == target_number {
+					// winner found!
+					solutions.push(expression);
+
+					if find_all_solutions == false {
+						return BruteForcerOutput {
+							solutions,
+							solutions_considered,
+
+							time_taken: starting_time.elapsed()
+						};
+					}
 				}
 			}
+		}
 
-			let result = evaluator::evaluate(expression_builder.clone());
+		return BruteForcerOutput {
+			solutions,
+			solutions_considered,
+
+			time_taken: starting_time.elapsed()
+		};
+	}
+
+	// else, solve_with_parentheses == true
+
+
+
+	// n! permutations, assuming no duplicates
+	for number_permutation in number_permutations {
+		let operator_permutator = OperatorPermutator::new(&enabled_operations, input_len - 1);
+
+		// (# operators enabled)^n permutations
+		// for low values of n, this ordering of the loops is less efficient; but more efficient for higher values
+		for operator_permutation in operator_permutator {
+			let parentheses_permutator = ParenthesesPermutator::new(input_len);
+
+			// first, try number + operator combo without paren
+
+			let expression = build_expression(&number_permutation, &operator_permutation, None, None);
+
+			let result = evaluator::evaluate(expression.clone());
 
 			if result == target_number {
-				// winner found!
-				solutions.push(expression_builder);
+				solutions.push(expression);
 
 				if find_all_solutions == false {
 					return BruteForcerOutput {
+						// me when 8 layers of nesting
 						solutions,
 						solutions_considered,
 
@@ -68,78 +104,33 @@ pub fn brute_force(config: Config) -> BruteForcerOutput {
 					};
 				}
 			}
-		}
-	}
 
 
-	if solve_with_parentheses == true {
-		println!("Finding solutions with parentheses...");
+			// (n - 1) + (n - 2) + ... permutations while (n - x) != 0
+			for (lparen_pos, rparen_pos) in parentheses_permutator {
+				solutions_considered += 1;
 
-		// i may be atheist but god save me
+				let expression = build_expression(&number_permutation, &operator_permutation, Some(lparen_pos), Some(rparen_pos));
 
-		// first step: figure out how to store parentheses locations
-
-		// [before] 0, [after] 1?
-		// (1+2)+3+4
-		// [before] 2, [after] 3
-		// 1+2+(3+4)
-		// this should be fine
-
-		let parentheses_permutator = ParenthesesPermutator::new(input_len);
+				let result = evaluator::evaluate(expression.clone());
 
 
-		for parentheses_permutation in parentheses_permutator.into_iter() {
-			let (lparen_pos, rparen_pos) = parentheses_permutation;
+				if result == target_number {
+					solutions.push(expression);
 
-			for number_permutation in number_permutations.iter() {
-				let operator_permutator_paren = OperatorPermutator::new(&enabled_operations, input_len - 1);
+					if find_all_solutions == false {
+						return BruteForcerOutput {
+							// me when 8 layers of nesting
+							solutions,
+							solutions_considered,
 
-				for operator_permutation in operator_permutator_paren.into_iter() {
-					solutions_considered += 1;
-
-					let mut expression_builder = String::new();
-
-					for i in 0..input_len {
-						// HELP
-
-						if i == lparen_pos {
-							expression_builder.push('(');
-						}
-
-						expression_builder.push(char::from_digit(number_permutation[i] as u32, 10).unwrap());
-
-						if i == rparen_pos {
-							expression_builder.push(')');
-						}
-
-
-						if i != input_len - 1 {
-							expression_builder.push(operator_permutation[i]);
-						}
-					}
-
-
-					// h
-					let result = evaluator::evaluate(expression_builder.clone());
-
-					if result == target_number {
-						solutions.push(expression_builder);
-
-						if find_all_solutions == false {
-							return BruteForcerOutput {
-								// me when 8 layers of nesting
-								solutions,
-								solutions_considered,
-
-								time_taken: starting_time.elapsed()
-							};
-						}
+							time_taken: starting_time.elapsed()
+						};
 					}
 				}
 			}
 		}
 	}
-
 
 
 	return BruteForcerOutput {
@@ -148,6 +139,37 @@ pub fn brute_force(config: Config) -> BruteForcerOutput {
 
 		time_taken: starting_time.elapsed()
 	};
+}
+
+
+
+fn build_expression(number_permutation: &Vec<u8>, operator_permutation: &Vec<char>, lparen_pos: Option<usize>, rparen_pos: Option<usize>) -> String {
+	let input_len = number_permutation.len();
+
+	let lparen_pos = lparen_pos.unwrap_or(input_len + 1);
+	let rparen_pos = rparen_pos.unwrap_or(input_len + 1);
+
+	let mut expression_builder = String::new();
+
+	// build expression
+	for i in 0..input_len {
+		if i == lparen_pos {
+			expression_builder.push('(');
+		}
+
+		expression_builder.push(char::from_digit(number_permutation[i] as u32, 10).unwrap());
+
+		if i == rparen_pos {
+			expression_builder.push(')');
+		}
+
+		// ensures that a dangling operator isn't placed
+		if i != input_len - 1 {
+			expression_builder.push(operator_permutation[i]);
+		}
+	}
+
+	return expression_builder;
 }
 
 
