@@ -38,9 +38,8 @@ pub fn brute_force(config: Config) -> BruteForcerOutput {
 	for number_permutation in number_permutations.iter() {
 		let operator_permutator_no_paren = OperatorPermutator::new(&enabled_operations, input_len - 1);
 
-		for operator_permutation in operator_permutator_no_paren.into_iter() {
+		for operator_permutation in operator_permutator_no_paren {
 			solutions_considered += 1;
-
 
 			let mut expression_builder = String::new();
 
@@ -61,8 +60,6 @@ pub fn brute_force(config: Config) -> BruteForcerOutput {
 				solutions.push(expression_builder);
 
 				if find_all_solutions == false {
-					// break 'number_permutations;
-
 					return BruteForcerOutput {
 						solutions,
 						solutions_considered,
@@ -88,11 +85,11 @@ pub fn brute_force(config: Config) -> BruteForcerOutput {
 		// 1+2+(3+4)
 		// this should be fine
 
-		let mut parentheses_permutator = ParenthesesPermutator::new(input_len);
+		let parentheses_permutator = ParenthesesPermutator::new(input_len);
 
 
-		'parentheses_permutations: loop {
-			let (lparen_pos, rparen_pos) = parentheses_permutator.get_state();
+		for parentheses_permutation in parentheses_permutator.into_iter() {
+			let (lparen_pos, rparen_pos) = parentheses_permutation;
 
 			for number_permutation in number_permutations.iter() {
 				let operator_permutator_paren = OperatorPermutator::new(&enabled_operations, input_len - 1);
@@ -139,13 +136,6 @@ pub fn brute_force(config: Config) -> BruteForcerOutput {
 						}
 					}
 				}
-			}
-
-
-			parentheses_permutator.increment();
-
-			if parentheses_permutator.is_maxed == true {
-				break 'parentheses_permutations;
 			}
 		}
 	}
