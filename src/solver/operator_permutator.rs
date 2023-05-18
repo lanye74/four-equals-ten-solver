@@ -2,52 +2,39 @@ use std::collections::HashMap;
 
 
 
-// #[derive(Debug)]
 pub struct OperatorPermutator {
-	state: Vec<u8>,
+	state: Vec<usize>,
 	state_length: usize,
-	pub is_maxed: bool,
+	is_maxed: bool,
 
-	#[allow(dead_code)]
 	operator_mapper: OperatorMapper,
-	num_operators: usize
+	unique_operators: usize
 }
 
 
 
 impl OperatorPermutator {
-	pub fn new(enabled_operations: String, length: usize) -> OperatorPermutator {
-		let operator_mapper = OperatorMapper::new(enabled_operations);
+	pub fn new(enabled_operations: &String, num_nodes: usize) -> OperatorPermutator {
+		let operator_mapper = OperatorMapper::new(&enabled_operations);
 
 		return OperatorPermutator {
-			state_length: length,
-			state: vec![0; length],
+			state_length: num_nodes,
+			state: vec![0; num_nodes],
 
-			num_operators: operator_mapper.len(),
+			unique_operators: operator_mapper.len(),
 			operator_mapper,
 
 			is_maxed: false
 		};
 	}
 
-	// this boolean value returned indicates whether the state is "maxed" or not
-	// that is to say, whether OperatorPermutator_instance.state == vec![3, 3, 3, 3];
-	pub fn increment(&mut self) {
+	fn increment(&mut self) {
 		self.state[0] += 1;
 
-		self.wrap_values();
-	}
-
-	pub fn get_operator_at(&self, i: usize) -> char {
-		return *self.operator_mapper.map(self.state[i]);
-	}
-
-	fn wrap_values(&mut self) {
+		// wrap values
 		for i in 0..self.state_length {
-			let operator = self.state[i];
-
 			// operator is above max value, wrap it
-			if operator == self.num_operators as u8 {
+			if self.state[i] == self.unique_operators  {
 				self.state[i] = 0;
 
 				if i + 1 == self.state_length {
@@ -62,28 +49,29 @@ impl OperatorPermutator {
 		}
 	}
 
-	pub fn reset(&mut self) {
-		// for i in 0..self.state_length {
-		//	self.state[i] = 0;
-		// }
+	fn state_as_char_vec(&mut self) -> Vec<char> {
+		let mut output = vec![];
 
-		self.state = vec![0; self.state_length];
+		for element in self.state.iter() {
+			output.push(*self.operator_mapper.map(*element));
+		}
 
-		self.is_maxed = false;
+		return output;
 	}
 }
 
 
 
 impl Iterator for OperatorPermutator {
-	type Item = Vec<u8>;
+	type Item = Vec<char>;
 
 	fn next(&mut self) -> Option<Self::Item> {
-		self.increment();
+		let output = self.state_as_char_vec();
 
-		// fix logic here
 		if self.is_maxed == false {
-			return Some(self.state.clone());
+			self.increment();
+
+			return Some(output);
 		}
 
 		return None;
@@ -93,27 +81,27 @@ impl Iterator for OperatorPermutator {
 
 
 struct OperatorMapper {
-	map: HashMap<u8, char>
+	map: HashMap<usize, char>
 }
 
 
 
 impl OperatorMapper {
-	pub fn new(enabled_operations: String) -> OperatorMapper {
+	pub fn new(enabled_operations: &String) -> OperatorMapper {
 		let operations = enabled_operations
 			.chars()
 			.enumerate();
 
-		let mut map: HashMap<u8, char> = HashMap::new();
+		let mut map: HashMap<usize, char> = HashMap::new();
 
 		for (i, operation) in operations {
-			map.insert(i as u8, operation);
+			map.insert(i, operation);
 		}
 
 		return OperatorMapper {map};
 	}
 
-	pub fn map(&self, i: u8) -> &char {
+	pub fn map(&self, i: usize) -> &char {
 		// char implements copy trait. no need to clone
 		return self.map.get(&i).unwrap();
 	}

@@ -29,22 +29,16 @@ pub fn brute_force(config: Config) -> BruteForcerOutput {
 	println!("Generating number permutations...");
 	let number_permutations = generate_permutations(&mut input);
 
-	let mut operator_permutator = OperatorPermutator::new(enabled_operations, input_len - 1);
-
 	let mut solutions = vec![];
-
-
 	let mut solutions_considered: u64 = 0;
-
 
 	// attempt to solve without parentheses
 	println!("Finding solutions{}", if solve_with_parentheses == false {"..."} else {" without parentheses..."});
 
-	#[allow(unused_labels)]
-	'number_permutations: for number_permutation in number_permutations.iter() {
-		operator_permutator.reset();
+	for number_permutation in number_permutations.iter() {
+		let operator_permutator_no_paren = OperatorPermutator::new(&enabled_operations, input_len - 1);
 
-		'operation_permutations: loop {
+		for operator_permutation in operator_permutator_no_paren.into_iter() {
 			solutions_considered += 1;
 
 
@@ -56,7 +50,7 @@ pub fn brute_force(config: Config) -> BruteForcerOutput {
 
 				// ensures that a dangling operator isn't placed
 				if i != input_len - 1 {
-					expression_builder.push(operator_permutator.get_operator_at(i));
+					expression_builder.push(operator_permutation[i]);
 				}
 			}
 
@@ -77,16 +71,6 @@ pub fn brute_force(config: Config) -> BruteForcerOutput {
 					};
 				}
 			}
-
-
-			operator_permutator.increment();
-
-			if operator_permutator.is_maxed == true {
-				// worked through every operator combination; run the loop again
-				// this is equivalent to continue 'permutation loop but just for clarity
-
-				break 'operation_permutations;
-			}
 		}
 	}
 
@@ -106,17 +90,14 @@ pub fn brute_force(config: Config) -> BruteForcerOutput {
 
 		let mut parentheses_permutator = ParenthesesPermutator::new(input_len);
 
-		// technically redundant but it makes me feel better
-		operator_permutator.reset();
 
 		'parentheses_permutations: loop {
 			let (lparen_pos, rparen_pos) = parentheses_permutator.get_state();
 
-			#[allow(unused_labels)]
-			'number_permutations: for number_permutation in number_permutations.iter() {
-				operator_permutator.reset();
+			for number_permutation in number_permutations.iter() {
+				let operator_permutator_paren = OperatorPermutator::new(&enabled_operations, input_len - 1);
 
-				'operation_permutations: loop {
+				for operator_permutation in operator_permutator_paren.into_iter() {
 					solutions_considered += 1;
 
 					let mut expression_builder = String::new();
@@ -136,7 +117,7 @@ pub fn brute_force(config: Config) -> BruteForcerOutput {
 
 
 						if i != input_len - 1 {
-							expression_builder.push(operator_permutator.get_operator_at(i));
+							expression_builder.push(operator_permutation[i]);
 						}
 					}
 
@@ -156,13 +137,6 @@ pub fn brute_force(config: Config) -> BruteForcerOutput {
 								time_taken: starting_time.elapsed()
 							};
 						}
-					}
-
-
-					operator_permutator.increment();
-
-					if operator_permutator.is_maxed == true {
-						break 'operation_permutations;
 					}
 				}
 			}
