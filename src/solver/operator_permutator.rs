@@ -2,26 +2,26 @@ use std::collections::HashMap;
 
 
 
-pub struct OperatorPermutator {
+pub struct OperatorPermutator<'a> {
 	state: Vec<usize>,
 	state_length: usize,
 	is_maxed: bool,
 
-	operator_mapper: OperatorMapper,
+	operator_mapper: &'a OperatorMapper,
 	unique_operators: usize
 }
 
 
 
-impl OperatorPermutator {
-	pub fn new(enabled_operations: &String, num_nodes: usize) -> OperatorPermutator {
-		let operator_mapper = OperatorMapper::new(&enabled_operations);
+impl OperatorPermutator<'_> {
+	pub fn new(operator_mapper: &OperatorMapper, num_nodes: usize) -> OperatorPermutator {
+		// let operator_mapper = OperatorMapper::new(&enabled_operations);
 
 		return OperatorPermutator {
 			state_length: num_nodes,
 			state: vec![0; num_nodes],
 
-			unique_operators: operator_mapper.len(),
+			unique_operators: operator_mapper.len,
 			operator_mapper,
 
 			is_maxed: false
@@ -62,7 +62,7 @@ impl OperatorPermutator {
 
 
 
-impl Iterator for OperatorPermutator {
+impl Iterator for OperatorPermutator<'_> {
 	type Item = Vec<char>;
 
 	fn next(&mut self) -> Option<Self::Item> {
@@ -80,8 +80,9 @@ impl Iterator for OperatorPermutator {
 
 
 
-struct OperatorMapper {
-	map: HashMap<usize, char>
+pub struct OperatorMapper {
+	map: HashMap<usize, char>,
+	len: usize
 }
 
 
@@ -98,15 +99,14 @@ impl OperatorMapper {
 			map.insert(i, operation);
 		}
 
-		return OperatorMapper {map};
+		return OperatorMapper {
+			len: map.len(),
+			map
+		};
 	}
 
 	pub fn map(&self, i: usize) -> &char {
 		// char implements copy trait. no need to clone
 		return self.map.get(&i).unwrap();
-	}
-
-	pub fn len(&self) -> usize {
-		return self.map.len();
 	}
 }

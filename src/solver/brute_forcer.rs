@@ -2,7 +2,7 @@ use std::time::{Duration, Instant};
 
 use crate::configurator::Config;
 use super::evaluator;
-use super::OperatorPermutator;
+use super::{OperatorPermutator, OperatorMapper};
 use super::ParenthesesPermutator;
 
 
@@ -34,11 +34,14 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 	let mut solutions = vec![];
 	let mut solutions_considered: u64 = 0;
 
+
+	let operator_mapper = OperatorMapper::new(&enabled_operations);
+
 	println!("Finding solutions...");
 
 	// n! permutations, assuming no duplicates
 	for number_permutation in number_permutations {
-		let operator_permutator = OperatorPermutator::new(enabled_operations, input_len - 1);
+		let operator_permutator = OperatorPermutator::new(&operator_mapper, input_len - 1);
 
 		// (# operators enabled)^n permutations
 		// for low values of n, this ordering of the loops is less efficient; but more efficient for higher values
