@@ -2,7 +2,7 @@ use super::tokenizer::{self, Token};
 
 
 
-pub fn evaluate(expression: String) -> f32 {
+pub fn evaluate(expression: &String) -> f32 {
 	let mut tokens: Vec<Token> = tokenizer::tokenize(expression);
 
 	// this function assumes there is only one set of parentheses, and that the input is valid
@@ -195,13 +195,13 @@ fn unwrap_token(number: &Token) -> f32 {
 #[test]
 fn test_evaluator() {
 	// basic checks
-	assert_eq!(evaluate(String::from("7*3-(1-3)")), 23.0);
-	assert_eq!(evaluate(String::from("4/0+1*2")), f32::INFINITY);
+	assert_eq!(evaluate(&String::from("7*3-(1-3)")), 23.0);
+	assert_eq!(evaluate(&String::from("4/0+1*2")), f32::INFINITY);
 
 	// pemdas
-	assert_eq!(evaluate(String::from("4+3*2")), 10.0);
-	assert_eq!(evaluate(String::from("3-2-6*6/3")), -11.0);
+	assert_eq!(evaluate(&String::from("4+3*2")), 10.0);
+	assert_eq!(evaluate(&String::from("3-2-6*6/3")), -11.0);
 
 	// the parentheses bug i never caught
-	assert_eq!(evaluate(String::from("(2+2)+3")), 7.0)
+	assert_eq!(evaluate(&String::from("(2+2)+3")), 7.0)
 }

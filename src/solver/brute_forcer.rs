@@ -1,5 +1,4 @@
 use std::time::{Duration, Instant};
-use std::collections::HashSet;
 
 use crate::configurator::Config;
 use super::evaluator;
@@ -8,20 +7,23 @@ use super::ParenthesesPermutator;
 
 
 
-pub fn brute_force(config: Config) -> BruteForcerOutput {
+pub fn brute_force(config: &Config) -> BruteForcerOutput {
 	let starting_time = Instant::now();
 
 
 	// destructure
 	let Config {
-		input_digits: mut input,
-		enabled_operations,
+		ref input_digits,
+		ref enabled_operations,
 
 		target_number,
 
 		find_all_solutions,
 		solve_with_parentheses
-	} = config;
+	} = *config;
+
+
+	let mut input = input_digits.clone();
 
 
 	let input_len = input.len();
@@ -34,69 +36,25 @@ pub fn brute_force(config: Config) -> BruteForcerOutput {
 
 	println!("Finding solutions...");
 
-	if solve_with_parentheses == false {
-		// n! permutations, assuming no duplicates
-		for number_permutation in number_permutations {
-			let operator_permutator = OperatorPermutator::new(&enabled_operations, input_len - 1);
-
-			// (# operators enabled)^n permutations
-			// for low values of n, this ordering of the loops is less efficient; but more efficient for higher values
-			for operator_permutation in operator_permutator {
-				solutions_considered += 1;
-
-				let expression = build_expression(&number_permutation, &operator_permutation, None, None);
-
-				let result = evaluator::evaluate(expression.clone());
-
-				if result == target_number {
-					// winner found!
-					solutions.push(expression);
-
-					if find_all_solutions == false {
-						return BruteForcerOutput {
-							solutions,
-							solutions_considered,
-
-							time_taken: starting_time.elapsed()
-						};
-					}
-				}
-			}
-		}
-
-		return BruteForcerOutput {
-			solutions,
-			solutions_considered,
-
-			time_taken: starting_time.elapsed()
-		};
-	}
-
-	// else, solve_with_parentheses == true
-
-
-
 	// n! permutations, assuming no duplicates
 	for number_permutation in number_permutations {
-		let operator_permutator = OperatorPermutator::new(&enabled_operations, input_len - 1);
+		let operator_permutator = OperatorPermutator::new(enabled_operations, input_len - 1);
 
 		// (# operators enabled)^n permutations
 		// for low values of n, this ordering of the loops is less efficient; but more efficient for higher values
 		for operator_permutation in operator_permutator {
-			let parentheses_permutator = ParenthesesPermutator::new(input_len);
-
-			// first, try number + operator combo without paren
+			solutions_considered += 1;
 
 			let expression = build_expression(&number_permutation, &operator_permutation, None, None);
 
-			let result = evaluator::evaluate(expression.clone());
+			let result = evaluator::evaluate(&expression);
 
 			if result == target_number {
+				// winner found!
 				solutions.push(expression);
 
 				if find_all_solutions == false {
 					return BruteForcerOutput {
-						// me when 8 layers of nesting
 						solutions,
 						solutions_considered,
 
@@ -106,26 +64,30 @@ pub fn brute_force(config: Config) -> BruteForcerOutput {
 			}
 
 
-			// (n - 1) + (n - 2) + ... permutations while (n - x) != 0
-			for (lparen_pos, rparen_pos) in parentheses_permutator {
-				solutions_considered += 1;
+			if solve_with_parentheses == true {
+				let parentheses_permutator = ParenthesesPermutator::new(input_len);
 
-				let expression = build_expression(&number_permutation, &operator_permutation, Some(lparen_pos), Some(rparen_pos));
+				// (n - 1) + (n - 2) + ... permutations while (n - x) != 0
+				for (lparen_pos, rparen_pos) in parentheses_permutator {
+					solutions_considered += 1;
 
-				let result = evaluator::evaluate(expression.clone());
+					let expression = build_expression(&number_permutation, &operator_permutation, Some(lparen_pos), Some(rparen_pos));
+
+					let result = evaluator::evaluate(&expression);
 
 
-				if result == target_number {
-					solutions.push(expression);
+					if result == target_number {
+						solutions.push(expression);
 
-					if find_all_solutions == false {
-						return BruteForcerOutput {
-							// me when 8 layers of nesting
-							solutions,
-							solutions_considered,
+						if find_all_solutions == false {
+							return BruteForcerOutput {
+								// me when 8 layers of nesting
+								solutions,
+								solutions_considered,
 
-							time_taken: starting_time.elapsed()
-						};
+								time_taken: starting_time.elapsed()
+							};
+						}
 					}
 				}
 			}
@@ -206,25 +168,8 @@ fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 	}
 
 
-	let mut set = HashSet::new();
-
-
-	for i in 0..input.len() {
-		if set.contains(&input[i]) {
-			break;
-		}
-
-		set.insert(input[i]);
-	}
-
-	// if there are duplicates in the input, they will not be present in the set
-	// or if broken early
-	if set.len() != input_len {
-
-		output.sort();
-		output.dedup();
-	}
-
+	output.sort();
+	output.dedup();
 
 	return output;
 }
@@ -245,8 +190,8 @@ fn test_brute_forcer() {
 	};
 
 
-	let mut computation_1 = brute_force(config_1);
-	assert_eq!(evaluator::evaluate(computation_1.solutions.pop().unwrap()), 10.0);
+	let mut computation_1 = brute_force(&config_1);
+	assert_eq!(evaluator::evaluate(&computation_1.solutions.pop().unwrap()), 10.0);
 
 
 	let config_2 = Config {
@@ -259,8 +204,8 @@ fn test_brute_forcer() {
 		solve_with_parentheses: false
 	};
 
-	let mut computation_2 = brute_force(config_2);
-	assert_eq!(evaluator::evaluate(computation_2.solutions.pop().unwrap()), 10.0);
+	let mut computation_2 = brute_force(&config_2);
+	assert_eq!(evaluator::evaluate(&computation_2.solutions.pop().unwrap()), 10.0);
 
 
 
@@ -276,8 +221,8 @@ fn test_brute_forcer() {
 		solve_with_parentheses: true
 	};
 
-	let mut computation_3 = brute_force(config_3);
-	assert_eq!(evaluator::evaluate(computation_3.solutions.pop().unwrap()), 10.0);
+	let mut computation_3 = brute_force(&config_3);
+	assert_eq!(evaluator::evaluate(&computation_3.solutions.pop().unwrap()), 10.0);
 
 
 	let config_4 = Config {
@@ -290,8 +235,8 @@ fn test_brute_forcer() {
 		solve_with_parentheses: true
 	};
 
-	let mut computation_4 = brute_force(config_4);
-	assert_eq!(evaluator::evaluate(computation_4.solutions.pop().unwrap()), 10.0);
+	let mut computation_4 = brute_force(&config_4);
+	assert_eq!(evaluator::evaluate(&computation_4.solutions.pop().unwrap()), 10.0);
 
 
 	// with disabled operations
@@ -306,8 +251,8 @@ fn test_brute_forcer() {
 		solve_with_parentheses: false
 	};
 
-	let mut computation_5 = brute_force(config_5);
-	assert_eq!(evaluator::evaluate(computation_5.solutions.pop().unwrap()), 10.0);
+	let mut computation_5 = brute_force(&config_5);
+	assert_eq!(evaluator::evaluate(&computation_5.solutions.pop().unwrap()), 10.0);
 
 
 	// with different target
@@ -322,8 +267,8 @@ fn test_brute_forcer() {
 		solve_with_parentheses: true // this actually requires parentheses
 	};
 
-	let mut computation_6 = brute_force(config_6);
-	assert_eq!(evaluator::evaluate(computation_6.solutions.pop().unwrap()), 11.0);
+	let mut computation_6 = brute_force(&config_6);
+	assert_eq!(evaluator::evaluate(&computation_6.solutions.pop().unwrap()), 11.0);
 }
 
 

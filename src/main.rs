@@ -11,10 +11,8 @@ fn main() {
 	let mut configurator = Configurator::new();
 
 	let config = configurator.build_config();
-	let config_clone = config.clone();
 
-
-	let output = solver::brute_force(config);
+	let output = solver::brute_force(&config);
 
 
 	if output.solutions.is_empty() {
@@ -31,7 +29,7 @@ fn main() {
 			println!("{}", sol);
 		}
 
-		if config_clone.find_all_solutions == true {
+		if config.find_all_solutions == true {
 			println!("Total: {}", solutions_len);
 		}
 	}

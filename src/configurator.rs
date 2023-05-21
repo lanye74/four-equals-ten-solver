@@ -44,11 +44,16 @@ impl Configurator {
 			.filter(|num| *num < 10)
 			.collect::<Vec<u8>>();
 
+		if input_digits.len() < 3 {
+			panic!("At least 3 digits must be provided!");
+		}
+
+
 		return input_digits;
 	}
 
 	fn get_enabled_operations(&mut self) -> String {
-		let result = self.io_reader.read_with_default("Enter your available non-parentheses operations, or leave blank for all: ", String::from("+-*/"));
+		let result = self.io_reader.read_with_default("Enter your available non-parentheses operations (default: all): ", String::from("+-*/"));
 
 		let result = result
 			.chars()
@@ -61,15 +66,15 @@ impl Configurator {
 	}
 
 	fn get_target_number(&mut self) -> f32 {
-		return self.io_reader.read_float_with_default("Enter your target number, or leave empty for 10: ", 10.0);
+		return self.io_reader.read_float_with_default("Enter your target number (default: 10): ", 10.0);
 	}
 
 	fn get_find_all_solutions(&mut self) -> bool {
-		return self.io_reader.yn_prompt("Do you want to find all solutions? Y/N: ");
+		return self.io_reader.yn_prompt("Do you want to find all solutions? Y/N (default: Y): ", Some(true));
 	}
 
 	fn get_solve_with_parentheses(&mut self) -> bool {
-		return self.io_reader.yn_prompt("Do you want to find solutions with parentheses? Y/N: ");
+		return self.io_reader.yn_prompt("Do you want to find solutions with parentheses? Y/N (default: Y): ", Some(true));
 	}
 }
 

@@ -14,7 +14,7 @@ pub enum Token {
 
 
 
-pub fn tokenize(expression: String) -> Vec<Token> {
+pub fn tokenize(expression: &String) -> Vec<Token> {
 	// this function assumes that any numbers input are positive single-digit integers, which is true for 4=10
 	// if i was writing a tokenizer for more complex inputs, we might have issues
 	// such is not the case : )
@@ -43,7 +43,7 @@ fn map_to_token(character: char) -> Token {
 
 		other => {
 			return Token::Number(other.to_digit(10)
-				.expect("token mapper received invalid input!") as f32
+				.expect("map_to_token received invalid input!") as f32
 			);
 		}
 	};
@@ -71,7 +71,7 @@ fn test_tokenizer() {
 	}
 
 
-	let result = tokenize(String::from("(3*5)/7+0-1*2*9/(8+4)*6"));
+	let result = tokenize(&String::from("(3*5)/7+0-1*2*9/(8+4)*6"));
 
 	let expected = vec![
 		Token::LParen, Token::Number(3.0), Token::Multiply, Token::Number(5.0), Token::RParen,
