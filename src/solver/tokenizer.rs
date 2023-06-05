@@ -1,5 +1,4 @@
-#[derive(PartialEq)]
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 // #[derive(Debug)]
 pub enum Token {
 	Add,
@@ -22,7 +21,7 @@ pub fn tokenize(expression: &String) -> Vec<Token> {
 
 	let mut output: Vec<Token> = Vec::new();
 
-	for (_index, character) in characters.enumerate() {
+	for character in characters {
 		let token = map_to_token(character);
 		output.push(token);
 	}

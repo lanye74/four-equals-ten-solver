@@ -145,19 +145,18 @@ fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 	let mut output: Vec<Vec<u8>> = vec![];
 	let mut state: Vec<usize> = vec![0; input_len];
 
-
 	output.push(input.clone());
 
 	let mut pointer = 1;
 
 	// quite honestly i have no idea how this works i just ripped it from wikipedia (heap's algorithm)
+	// edit: i now have a slightly better idea how it works after looking at the quickperm algorithms
 	while pointer < input_len {
 		if state[pointer] < pointer {
-			if pointer % 2 == 0 {
-				input.swap(0, pointer);
-			} else {
-				input.swap(state[pointer], pointer);
-			}
+			// neat branchless trick; if pointer is even {0} else {state[pointer]}
+			let pointer_2 = (pointer % 2) * state[pointer];
+
+			input.swap(pointer, pointer_2);
 
 			output.push(input.clone());
 

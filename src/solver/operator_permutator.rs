@@ -1,7 +1,3 @@
-use std::collections::HashMap;
-
-
-
 pub struct OperatorPermutator<'a> {
 	state: Vec<usize>,
 	state_length: usize,
@@ -53,7 +49,7 @@ impl OperatorPermutator<'_> {
 		let mut output = vec![];
 
 		for element in self.state.iter() {
-			output.push(*self.operator_mapper.map(*element));
+			output.push(self.operator_mapper.map(*element));
 		}
 
 		return output;
@@ -81,7 +77,7 @@ impl Iterator for OperatorPermutator<'_> {
 
 
 pub struct OperatorMapper {
-	map: HashMap<usize, char>,
+	map: Vec<char>,
 	len: usize
 }
 
@@ -91,22 +87,16 @@ impl OperatorMapper {
 	pub fn new(enabled_operations: &String) -> OperatorMapper {
 		let operations = enabled_operations
 			.chars()
-			.enumerate();
+			.collect::<Vec<char>>();
 
-		let mut map: HashMap<usize, char> = HashMap::new();
-
-		for (i, operation) in operations {
-			map.insert(i, operation);
-		}
-
+		// fun fact: map was once a hashmap. why? god knows! i'm insane!
 		return OperatorMapper {
-			len: map.len(),
-			map
+			len: operations.len(),
+			map: operations
 		};
 	}
 
-	pub fn map(&self, i: usize) -> &char {
-		// char implements copy trait. no need to clone
-		return self.map.get(&i).unwrap();
+	pub fn map(&self, i: usize) -> char {
+		return self.map[i];
 	}
 }
