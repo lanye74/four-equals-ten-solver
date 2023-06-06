@@ -26,7 +26,7 @@ pub fn evaluate(expression: &String) -> f32 {
 			let operator_pos = find_next_operator_pos(&tokens, Some(lparen_pos), Some(rparen_pos));
 
 			// compute the expression
-			let operation_value = evaluate_expression(&tokens[operator_pos], &tokens[operator_pos - 1], &tokens[operator_pos + 1]);
+			let operation_value = evaluate_expression(&tokens[(operator_pos - 1)..=(operator_pos + 1)]);
 
 			// replace [..., operand_one, operation, operand_two, ...] with [..., result, ...]
 			substitute_expression(&mut tokens, operator_pos, operation_value);
@@ -49,7 +49,7 @@ pub fn evaluate(expression: &String) -> f32 {
 	while num_expressions > 0 {
 		let operator_pos = find_next_operator_pos(&tokens, None, None);
 
-		let operation_value = evaluate_expression(&tokens[operator_pos], &tokens[operator_pos - 1], &tokens[operator_pos + 1]);
+		let operation_value = evaluate_expression(&tokens[(operator_pos - 1)..=(operator_pos + 1)]);
 
 		substitute_expression(&mut tokens, operator_pos, operation_value);
 
@@ -135,12 +135,14 @@ fn remove_parentheses(input: &mut Vec<Token>) {
 }
 
 
+//            vec: [1 + 2 + 3 + 4]
+// slice contents:     |   |
+fn evaluate_expression(expression_slice: &[Token]) -> f32 {
+	let operand_one = unwrap_token(&expression_slice[0]);
+	let operand_two = unwrap_token(&expression_slice[2]);
 
-fn evaluate_expression(operation: &Token, operand_one: &Token, operand_two: &Token) -> f32 {
-	let operand_one = unwrap_token(operand_one);
-	let operand_two = unwrap_token(operand_two);
-
-	return match operation {
+	// operator
+	return match &expression_slice[1] {
 		Token::Add => operand_one + operand_two,
 		Token::Subtract => operand_one - operand_two,
 		Token::Multiply => operand_one * operand_two,

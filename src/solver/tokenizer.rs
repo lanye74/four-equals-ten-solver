@@ -14,15 +14,17 @@ pub enum Token {
 
 
 pub fn tokenize(expression: &String) -> Vec<Token> {
+	// fun fact! this function once converted the input to chars, enumerated them, and then looped over that, pushing each iteration into an output vector
+
 	return expression
 		.chars()
-		.map(|char| map_to_token(char))
+		.map(|char| map_char_to_token(char))
 		.collect::<Vec<Token>>();
 }
 
 
 
-fn map_to_token(character: char) -> Token {
+fn map_char_to_token(character: char) -> Token {
 	// this function assumes that any numbers input are positive single-digit integers, which is true for 4=10
 	// if i was writing a tokenizer for more complex inputs, we might have issues
 	// such is not the case : )
@@ -37,7 +39,7 @@ fn map_to_token(character: char) -> Token {
 
 		digit_as_char => {
 			return Token::Number(digit_as_char.to_digit(10)
-				.expect("map_to_token received invalid input!") as f32
+				.expect("map_char_to_token received invalid input!") as f32
 			);
 		}
 	};
