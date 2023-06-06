@@ -14,24 +14,19 @@ pub enum Token {
 
 
 pub fn tokenize(expression: &String) -> Vec<Token> {
-	// this function assumes that any numbers input are positive single-digit integers, which is true for 4=10
-	// if i was writing a tokenizer for more complex inputs, we might have issues
-	// such is not the case : )
-	let characters = expression.chars();
-
-	let mut output: Vec<Token> = Vec::new();
-
-	for character in characters {
-		let token = map_to_token(character);
-		output.push(token);
-	}
-
-	return output;
+	return expression
+		.chars()
+		.map(|char| map_to_token(char))
+		.collect::<Vec<Token>>();
 }
 
 
 
 fn map_to_token(character: char) -> Token {
+	// this function assumes that any numbers input are positive single-digit integers, which is true for 4=10
+	// if i was writing a tokenizer for more complex inputs, we might have issues
+	// such is not the case : )
+
 	return match character {
 		'+' => Token::Add,
 		'-' => Token::Subtract,
@@ -40,8 +35,8 @@ fn map_to_token(character: char) -> Token {
 		'(' => Token::LParen,
 		')' => Token::RParen,
 
-		other => {
-			return Token::Number(other.to_digit(10)
+		digit_as_char => {
+			return Token::Number(digit_as_char.to_digit(10)
 				.expect("map_to_token received invalid input!") as f32
 			);
 		}
