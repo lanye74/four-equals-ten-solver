@@ -57,7 +57,7 @@ impl IOReader {
 
 
 
-// extension methods of read and read_line
+// extension methods of read, read_line, and read_with_default
 impl IOReader {
 	pub fn yn_prompt(&mut self, prompt: &'static str, default: Option<bool>) -> bool {
 		let result = self.read(prompt);

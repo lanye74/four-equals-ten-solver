@@ -44,10 +44,8 @@ impl Configurator {
 			.filter(|num| *num < 10)
 			.collect::<Vec<u8>>();
 
-		if input_digits.len() < 3 {
-			panic!("At least 3 digits must be provided!");
-		}
 
+		assert!(input_digits.len() > 2, "At least 3 digits must be provided!");
 
 		return input_digits;
 	}
@@ -58,7 +56,6 @@ impl Configurator {
 		let result = result
 			.chars()
 			.filter(|char| *char == '+' || *char == '-' || *char == '*' || *char == '/')
-			.into_iter()
 			.collect::<String>();
 
 

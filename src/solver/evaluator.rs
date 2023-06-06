@@ -146,9 +146,7 @@ fn evaluate_expression(operation: &Token, operand_one: &Token, operand_two: &Tok
 		Token::Multiply => operand_one * operand_two,
 		Token::Divide => operand_one / operand_two,
 
-		_ => {
-			panic!("invalid operation supplied to evaluate_expression!");
-		}
+		_ => panic!("Invalid operation supplied to evaluate_expression!")
 	};
 }
 

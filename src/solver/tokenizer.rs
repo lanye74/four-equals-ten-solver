@@ -78,7 +78,5 @@ fn test_tokenizer() {
 
 	let are_equal = vecs_are_equal(result, expected);
 
-	if are_equal == false {
-		panic!("tokenization does not match expected!");
-	}
+	assert!(are_equal == true, "tokenization does not match expected!");
 }
