@@ -87,51 +87,22 @@ fn find_next_operator_pos(input: &Vec<Token>, lower_bound: Option<usize>, upper_
 
 
 fn substitute_expression(input: &mut Vec<Token>, operator_position: usize, value: f32) {
-	let mut input_new: Vec<Token> = vec![];
-	let input_len = input.len();
-
-	// e.g. 1*(2/3)+4
-	// operator_position = 5
-	// before_expression = 1*(
-	// after_expression = )+4
-	let before_expression = &input[0..(operator_position - 1)]; // &input[0..=(operator_position - 2)];
-	let after_expression = &input[(operator_position + 2)..input_len];
-
-	input_new.extend_from_slice(before_expression);
-	input_new.push(Token::Number(value));
-	input_new.extend_from_slice(after_expression);
-
-	*input = input_new;
+	// this is actually remarkably easy to write with splice. and significantly faster
+	input.splice(
+		(operator_position - 1)..=(operator_position + 1),
+		vec![Token::Number(value)]
+	);
 }
 
 
 
 fn remove_parentheses(input: &mut Vec<Token>) {
-	let mut input_new: Vec<Token> = vec![];
-	let input_len = input.len();
-
+	// ...this was also unreasonably complicated. oopsie
 	let lparen_pos = find_token(input, Token::LParen);
 	let rparen_pos = find_token(input, Token::RParen);
 
-
-	let before_paren;
-
-	if lparen_pos != 0 {
-		before_paren =  &input[0..=(lparen_pos - 1)];
-	} else {
-		// throws a hissy fit if paren is at 0
-		before_paren = &input[0..0];
-	}
-
-	let paren_contents = &input[(lparen_pos + 1)..=(rparen_pos - 1)];
-	let after_paren = &input[(rparen_pos + 1)..input_len];
-
-
-	input_new.extend_from_slice(before_paren);
-	input_new.extend_from_slice(paren_contents);
-	input_new.extend_from_slice(after_paren);
-
-	*input = input_new;
+	input.remove(lparen_pos);
+	input.remove(rparen_pos - 1); // adjust for shifting caused by removing lparen
 }
 
 

@@ -1,5 +1,5 @@
 #[derive(Clone, PartialEq)]
-// #[derive(Debug)]
+#[derive(Debug)]
 pub enum Token {
 	Add,
 	Subtract,
