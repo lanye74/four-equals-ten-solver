@@ -155,29 +155,19 @@ fn evaluate_expression(expression_slice: &[Token]) -> f32 {
 
 
 fn find_token(vec: &Vec<Token>, token: Token) -> usize {
-	for index in 0..(vec.len()) {
-		let element = &vec[index];
-
-		if *element == token {
-			return index;
-		}
-	}
-
-	return usize::MAX;
+	return vec.iter()
+		.position(|element| *element == token)
+		.unwrap_or(usize::MAX);
 }
 
 
 
 fn find_token_in_range(vec: &Vec<Token>, token: Token, lower_bound: usize, upper_bound: usize) -> usize {
-	for index in lower_bound..=upper_bound {
-		let element = &vec[index];
-
-		if *element == token {
-			return index;
-		}
-	}
-
-	return usize::MAX;
+	return vec[lower_bound..=upper_bound]
+		.iter()
+		.position(|element| *element == token)
+		.map(|index| index + lower_bound) // adjust for taking the slice
+		.unwrap_or(usize::MAX);
 }
 
 

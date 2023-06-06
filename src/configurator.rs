@@ -41,7 +41,7 @@ impl Configurator {
 		let input_digits = input_digits
 			.chars()
 			.map(|char| char.to_digit(10).unwrap_or(255) as u8)
-			.filter(|num| *num < 10)
+			.filter(|&num| num < 10)
 			.collect::<Vec<u8>>();
 
 
