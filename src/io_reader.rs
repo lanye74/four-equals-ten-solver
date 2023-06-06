@@ -74,9 +74,6 @@ impl IOReader {
 	pub fn read_float_with_default(&mut self, prompt: &'static str, default: f32) -> f32 {
 		let result = self.read_with_default(prompt, default.to_string());
 
-		return match result.parse::<f32>() {
-			Ok(value) => value,
-			Err(..) => default
-		};
+		return result.parse::<f32>().unwrap_or(default);
 	}
 }

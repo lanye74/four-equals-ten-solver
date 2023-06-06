@@ -30,6 +30,8 @@ impl ParenthesesPermutator {
 
 			if self.rparen_pos == self.input_length {
 				self.is_maxed = true;
+
+				return;
 			}
 		}
 
@@ -52,14 +54,14 @@ impl Iterator for ParenthesesPermutator {
 	type Item = (usize, usize);
 
 	fn next(&mut self) -> Option<Self::Item> {
-		let output = self.get_state();
-
-		if self.is_maxed == false {
-			self.increment();
-
-			return Some(output);
+		if self.is_maxed {
+			return None;
 		}
 
-		return None;
+		let output = self.get_state();
+
+		self.increment();
+
+		return Some(output);
 	}
 }

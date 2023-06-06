@@ -55,7 +55,7 @@ impl Configurator {
 
 		let result = result
 			.chars()
-			.filter(|char| *char == '+' || *char == '-' || *char == '*' || *char == '/')
+			.filter(|&char| char == '+' || char == '-' || char == '*' || char == '/')
 			.collect::<String>();
 
 

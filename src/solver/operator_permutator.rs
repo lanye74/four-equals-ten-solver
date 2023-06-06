@@ -17,7 +17,7 @@ impl OperatorPermutator<'_> {
 			state_length: num_nodes,
 			state: vec![0; num_nodes],
 
-			unique_operators: operator_mapper.len,
+			unique_operators: operator_mapper.map.len(),
 			operator_mapper,
 
 			is_maxed: false
@@ -46,13 +46,10 @@ impl OperatorPermutator<'_> {
 	}
 
 	fn state_as_char_vec(&mut self) -> Vec<char> {
-		let mut output = vec![];
-
-		for element in self.state.iter() {
-			output.push(self.operator_mapper.map(*element));
-		}
-
-		return output;
+		// remove unnecessary allocation
+		return self.state.iter()
+			.map(|&operator| self.operator_mapper.map(operator))
+			.collect();
 	}
 }
 
@@ -62,23 +59,22 @@ impl Iterator for OperatorPermutator<'_> {
 	type Item = Vec<char>;
 
 	fn next(&mut self) -> Option<Self::Item> {
-		let output = self.state_as_char_vec();
-
-		if self.is_maxed == false {
-			self.increment();
-
-			return Some(output);
+		if self.is_maxed == true {
+			return None;
 		}
 
-		return None;
+		let output = self.state_as_char_vec();
+
+		self.increment();
+
+		return Some(output);
 	}
 }
 
 
 
 pub struct OperatorMapper {
-	map: Vec<char>,
-	len: usize
+	map: Vec<char>
 }
 
 
@@ -91,7 +87,6 @@ impl OperatorMapper {
 
 		// fun fact: map was once a hashmap. why? god knows! i'm insane!
 		return OperatorMapper {
-			len: operations.len(),
 			map: operations
 		};
 	}

@@ -18,7 +18,7 @@ pub fn tokenize(expression: &String) -> Vec<Token> {
 
 	return expression
 		.chars()
-		.map(|char| map_char_to_token(char))
+		.map(map_char_to_token)
 		.collect::<Vec<Token>>();
 }
 
