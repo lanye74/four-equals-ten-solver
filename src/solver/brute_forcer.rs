@@ -114,7 +114,9 @@ fn build_expression(number_permutation: &Vec<u8>, operator_permutation: &Vec<cha
 	let lparen_pos = lparen_pos.unwrap_or(input_len + 1);
 	let rparen_pos = rparen_pos.unwrap_or(input_len + 1);
 
-	let mut expression_builder = String::new();
+	// let mut expression_builder = String::new();
+
+	let mut expression_builder = String::with_capacity(input_len + operator_permutation.len() + 2);
 
 	// build expression
 	for i in 0..input_len {
@@ -158,6 +160,10 @@ fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 
 			input.swap(pointer, pointer_2);
 
+			// TODO: possibly use this to generate all index combinations? as opposed to cloning
+			// i.e. return [[0, 1, 2, 3], [0, 1, 3, 2], ... [3, 2, 1, 0]]
+			// it would help w memory but i dunno about memory access
+			// if i create a numberpermutation struct it might be okay
 			output.push(input.clone());
 
 			state[pointer] += 1;
@@ -169,9 +175,16 @@ fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 		}
 	}
 
+	// remove duplicate numbers
+	input.sort();
+	input.dedup();
 
-	output.sort();
-	output.dedup();
+	// only waste time sorting/deduping the output if there are duplicates in the input
+	if input.len() != input_len {
+		output.sort();
+		output.dedup();
+	}
+
 
 	return output;
 }
