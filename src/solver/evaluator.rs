@@ -87,11 +87,10 @@ fn find_next_operator_pos(input: &Vec<Token>, lower_bound: Option<usize>, upper_
 
 
 fn substitute_expression(input: &mut Vec<Token>, operator_position: usize, value: f32) {
-	// this is actually remarkably easy to write with splice. and significantly faster
-	input.splice(
-		(operator_position - 1)..=(operator_position + 1),
-		vec![Token::Number(value)]
-	);
+	// for some reason this is infinitely faster than splice. god knows why
+
+	input.drain((operator_position - 1)..=(operator_position + 1));
+	input.insert(operator_position - 1, Token::Number(value));
 }
 
 
@@ -143,8 +142,8 @@ fn find_token_in_range(vec: &Vec<Token>, token: Token, lower_bound: usize, upper
 
 
 
-fn unwrap_token(number: &Token) -> f32 {
-	return match number {
+fn unwrap_token(token: &Token) -> f32 {
+	return match token {
 		Token::Number(value) => *value,
 		_ => panic!("unwrap_token called with non-number!")
 	};
