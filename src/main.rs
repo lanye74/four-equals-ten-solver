@@ -25,9 +25,9 @@ fn main() {
 			if solutions_len > 1 {"s"} else {""}
 		);
 
-		for sol in output.solutions {
-			println!("{}", sol);
-		}
+		// for sol in output.solutions {
+		// 	println!("{}", sol);
+		// }
 
 		if config.find_all_solutions == true {
 			println!("Total: {}", solutions_len);

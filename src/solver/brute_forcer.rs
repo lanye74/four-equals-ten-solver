@@ -114,8 +114,6 @@ fn build_expression(number_permutation: &Vec<u8>, operator_permutation: &Vec<cha
 	let lparen_pos = lparen_pos.unwrap_or(input_len + 1);
 	let rparen_pos = rparen_pos.unwrap_or(input_len + 1);
 
-	// let mut expression_builder = String::new();
-
 	let mut expression_builder = String::with_capacity(input_len + operator_permutation.len() + 2);
 
 	// build expression
