@@ -1,5 +1,5 @@
 #[derive(Clone, PartialEq)]
-#[derive(Debug)]
+// #[derive(Debug)]
 pub enum Token {
 	Add,
 	Subtract,
@@ -13,13 +13,17 @@ pub enum Token {
 
 
 
+// TODO: simplify this using collect_into when it hits stable (see https://github.com/rust-lang/rust/issues/94780)
 pub fn tokenize(expression: &String) -> Vec<Token> {
-	// fun fact! this function once converted the input to chars, enumerated them, and then looped over that, pushing each iteration into an output vector
+	let mut output = Vec::with_capacity(expression.len());
 
-	return expression
+	let mapped = expression
 		.chars()
-		.map(map_char_to_token)
-		.collect::<Vec<Token>>();
+		.map(map_char_to_token);
+
+	output.extend(mapped);
+
+	return output;
 }
 
 
@@ -55,15 +59,10 @@ fn test_tokenizer() {
 			return false;
 		}
 
-		let len = vec1.len();
-
-		for i in 0..len {
-			if vec1[i] != vec2[i] {
-				return false;
-			}
-		}
-
-		return true;
+		// god i love iterators
+		return vec1.into_iter()
+			.zip(vec2.into_iter())
+			.all(|(el1, el2)| el1 == el2);
 	}
 
 
