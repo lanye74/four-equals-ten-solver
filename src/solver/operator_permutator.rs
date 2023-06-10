@@ -46,7 +46,7 @@ impl OperatorPermutator<'_> {
 	}
 
 	fn state_as_char_vec(&mut self) -> Vec<char> {
-		// remove unnecessary allocation
+		// TODO: use collect_into when it becomes stable
 		return self.state.iter()
 			.map(|&operator| self.operator_mapper.map(operator))
 			.collect();

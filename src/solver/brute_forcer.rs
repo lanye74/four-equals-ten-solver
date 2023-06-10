@@ -48,7 +48,7 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 		for operator_permutation in operator_permutator {
 			solutions_considered += 1;
 
-			let expression = build_expression(&number_permutation, &operator_permutation, None, None);
+			let expression = build_expression(&number_permutation, &operator_permutation);
 
 			let result = evaluator::evaluate(&expression);
 
@@ -71,10 +71,10 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 				let parentheses_permutator = ParenthesesPermutator::new(input_len);
 
 				// (n - 1) + (n - 2) + ... permutations while (n - x) != 0
-				for (lparen_pos, rparen_pos) in parentheses_permutator {
+				for paren_pos in parentheses_permutator {
 					solutions_considered += 1;
 
-					let expression = build_expression(&number_permutation, &operator_permutation, Some(lparen_pos), Some(rparen_pos));
+					let expression = build_expression_with_parentheses(&number_permutation, &operator_permutation, paren_pos);
 
 					let result = evaluator::evaluate(&expression);
 
@@ -108,11 +108,27 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 
 
 
-fn build_expression(number_permutation: &Vec<u8>, operator_permutation: &Vec<char>, lparen_pos: Option<usize>, rparen_pos: Option<usize>) -> String {
+fn build_expression(number_permutation: &Vec<u8>, operator_permutation: &Vec<char>) -> String {
 	let input_len = number_permutation.len();
 
-	let lparen_pos = lparen_pos.unwrap_or(input_len + 1);
-	let rparen_pos = rparen_pos.unwrap_or(input_len + 1);
+	let mut expression_builder = String::with_capacity(input_len + operator_permutation.len());
+
+	for i in 0..input_len {
+		expression_builder.push(char::from_digit(number_permutation[i] as u32, 10).unwrap());
+
+		// ensures that a dangling operator isn't placed
+		if i != input_len - 1 {
+			expression_builder.push(operator_permutation[i]);
+		}
+	}
+
+	return expression_builder;
+}
+
+
+
+fn build_expression_with_parentheses(number_permutation: &Vec<u8>, operator_permutation: &Vec<char>, (lparen_pos, rparen_pos): (usize, usize)) -> String {
+	let input_len = number_permutation.len();
 
 	let mut expression_builder = String::with_capacity(input_len + operator_permutation.len() + 2);
 

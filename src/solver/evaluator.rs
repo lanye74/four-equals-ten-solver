@@ -75,15 +75,16 @@ fn find_next_operator_pos(input: &Vec<Token>, lower_bound: Option<usize>, upper_
 		match token {
 			Token::Multiply => {
 				multiply_pos = index + lower_bound;
-				break;
+				break; // break if found immediately, since mult/div are found first
 			}
 			Token::Divide => {
 				divide_pos = index + lower_bound;
 				break;
 			}
 			Token::Add => {
-				if add_pos == usize::MAX {
+				if add_pos == usize::MAX { // track only the first
 					add_pos = index + lower_bound;
+					// don't break since there may be multiplication/division to look for still
 				}
 			}
 			Token::Subtract => {
@@ -118,11 +119,12 @@ fn substitute_expression(input: &mut Vec<Token>, operator_position: usize, value
 fn remove_parentheses(input: &mut Vec<Token>) {
 	// ...this was also unreasonably complicated. oopsie
 	input.remove(find_token(input, Token::LParen));
-	input.remove(find_token(input, Token::RParen)); // adjust for shifting caused by removing lparen
+	input.remove(find_token(input, Token::RParen));
 }
 
 
-//			vec: [1 + 2 + 3 + 4]
+
+//          vec: [1 + 2 + 3 + 4]
 // slice contents:	 |   |
 fn evaluate_expression(expression_slice: &[Token]) -> f32 {
 	let operand_one = unwrap_token(&expression_slice[0]);
