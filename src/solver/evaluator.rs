@@ -1,3 +1,5 @@
+use std::mem;
+
 use super::tokenizer::{self, Token};
 
 
@@ -109,9 +111,8 @@ fn find_next_operator_pos(input: &Vec<Token>, lower_bound: Option<usize>, upper_
 
 
 fn substitute_expression(input: &mut Vec<Token>, operator_position: usize, value: f32) {
-	// for some reason this is infinitely faster than splice. god knows why
-	input.drain((operator_position - 1)..=(operator_position + 1));
-	input.insert(operator_position - 1, Token::Number(value));
+	let _ = mem::replace(&mut input[operator_position - 1], Token::Number(value));
+	input.drain(operator_position..=(operator_position + 1));
 }
 
 
@@ -125,7 +126,7 @@ fn remove_parentheses(input: &mut Vec<Token>) {
 
 
 //          vec: [1 + 2 + 3 + 4]
-// slice contents:	 |   |
+// slice contents:   |   |
 fn evaluate_expression(expression_slice: &[Token]) -> f32 {
 	let operand_one = unwrap_token(&expression_slice[0]);
 	let operand_two = unwrap_token(&expression_slice[2]);
