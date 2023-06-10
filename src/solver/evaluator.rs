@@ -66,18 +66,39 @@ fn find_next_operator_pos(input: &Vec<Token>, lower_bound: Option<usize>, upper_
 	let lower_bound = lower_bound.unwrap_or(0);
 	let upper_bound = upper_bound.unwrap_or(input.len() - 1);
 
-	let multiply_pos = find_token_in_range(input, Token::Multiply, lower_bound, upper_bound);
-	let divide_pos = find_token_in_range(input, Token::Divide, lower_bound, upper_bound);
+	let mut multiply_pos = usize::MAX;
+	let mut divide_pos = usize::MAX;
+	let mut add_pos = usize::MAX;
+	let mut subtract_pos = usize::MAX;
+
+	for (index, token) in input[lower_bound..=upper_bound].iter().enumerate() {
+		match token {
+			Token::Multiply => {
+				multiply_pos = index + lower_bound;
+				break;
+			}
+			Token::Divide => {
+				divide_pos = index + lower_bound;
+				break;
+			}
+			Token::Add => {
+				if add_pos == usize::MAX {
+					add_pos = index + lower_bound;
+				}
+			}
+			Token::Subtract => {
+				if subtract_pos == usize::MAX {
+					subtract_pos = index + lower_bound;
+				}
+			},
+			_ => {}
+		};
+	}
 
 
-	// find which comes first
 	let mut operator_pos = std::cmp::min(multiply_pos, divide_pos);
 
-	// if neither is present, search for addition/subtraction
 	if operator_pos == usize::MAX {
-		let add_pos = find_token_in_range(input, Token::Add, lower_bound, upper_bound);
-		let subtract_pos = find_token_in_range(input, Token::Subtract, lower_bound, upper_bound);
-
 		operator_pos = std::cmp::min(add_pos, subtract_pos);
 	}
 
@@ -88,7 +109,6 @@ fn find_next_operator_pos(input: &Vec<Token>, lower_bound: Option<usize>, upper_
 
 fn substitute_expression(input: &mut Vec<Token>, operator_position: usize, value: f32) {
 	// for some reason this is infinitely faster than splice. god knows why
-
 	input.drain((operator_position - 1)..=(operator_position + 1));
 	input.insert(operator_position - 1, Token::Number(value));
 }
@@ -97,16 +117,13 @@ fn substitute_expression(input: &mut Vec<Token>, operator_position: usize, value
 
 fn remove_parentheses(input: &mut Vec<Token>) {
 	// ...this was also unreasonably complicated. oopsie
-	let lparen_pos = find_token(input, Token::LParen);
-	let rparen_pos = find_token(input, Token::RParen);
-
-	input.remove(lparen_pos);
-	input.remove(rparen_pos - 1); // adjust for shifting caused by removing lparen
+	input.remove(find_token(input, Token::LParen));
+	input.remove(find_token(input, Token::RParen)); // adjust for shifting caused by removing lparen
 }
 
 
-//            vec: [1 + 2 + 3 + 4]
-// slice contents:     |   |
+//			vec: [1 + 2 + 3 + 4]
+// slice contents:	 |   |
 fn evaluate_expression(expression_slice: &[Token]) -> f32 {
 	let operand_one = unwrap_token(&expression_slice[0]);
 	let operand_two = unwrap_token(&expression_slice[2]);
@@ -124,19 +141,9 @@ fn evaluate_expression(expression_slice: &[Token]) -> f32 {
 
 
 
-fn find_token(vec: &Vec<Token>, token: Token) -> usize {
-	return vec.iter()
+fn find_token(input: &Vec<Token>, token: Token) -> usize {
+	return input.iter()
 		.position(|element| *element == token)
-		.unwrap_or(usize::MAX);
-}
-
-
-
-fn find_token_in_range(vec: &Vec<Token>, token: Token, lower_bound: usize, upper_bound: usize) -> usize {
-	return vec[lower_bound..=upper_bound]
-		.iter()
-		.position(|element| *element == token)
-		.map(|index| index + lower_bound) // adjust for taking the slice
 		.unwrap_or(usize::MAX);
 }
 
