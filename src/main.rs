@@ -32,7 +32,7 @@ fn main() {
 		println!("{}", sol);
 	}
 
-	if config.find_all_solutions == true {
+	if solutions_len > 1 {
 		println!("Total: {}", solutions_len);
 	}
 

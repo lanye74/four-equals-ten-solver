@@ -2,11 +2,12 @@
 
 [package]
 name = "four-equals-ten"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
+repository = "https://github.com/lanye74/four-equals-ten-solver"
+# TODO: add rust-version here when i eventually get to use collect_into
 
-# for flamegraph (disable when non-fg benchmarking)
-# [profile.release]
-# debug = true
 
-[dependencies]
+[profile.flamegraph]
+inherits = "release"
+debug = true
