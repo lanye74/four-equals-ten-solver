@@ -6,7 +6,7 @@ version = "0.1.0"
 edition = "2021"
 
 # for flamegraph (disable when non-fg benchmarking)
-# [profile.release]
-# debug = true
+[profile.release]
+debug = true
 
 [dependencies]

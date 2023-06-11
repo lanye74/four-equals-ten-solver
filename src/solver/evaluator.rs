@@ -1,5 +1,3 @@
-use std::mem;
-
 use super::tokenizer::{self, Token};
 
 
@@ -25,10 +23,16 @@ pub fn evaluate(expression: &String) -> f32 {
 		// loop over every expression
 		while num_expressions > 0 {
 			// find where the next operator is (mult/div - add/sub)
+			// TODO: possibly find all operator positions in the string, and use an iter to find next
 			let operator_pos = find_next_operator_pos(&tokens, Some(lparen_pos), Some(rparen_pos));
 
 			// compute the expression
 			let operation_value = evaluate_expression(&tokens[(operator_pos - 1)..=(operator_pos + 1)]);
+
+			// why does this reduce the amount of solutions found for 602793? TODO: compute twice, once with this check, once without; sort, dedup, examine the remaining
+			// if operation_value == f32::INFINITY {
+			// 	return f32::INFINITY;
+			// }
 
 			// replace [..., operand_one, operation, operand_two, ...] with [..., result, ...]
 			substitute_expression(&mut tokens, operator_pos, operation_value);
@@ -53,6 +57,10 @@ pub fn evaluate(expression: &String) -> f32 {
 
 		let operation_value = evaluate_expression(&tokens[(operator_pos - 1)..=(operator_pos + 1)]);
 
+		// if operation_value == f32::INFINITY {
+		// 	return f32::INFINITY;
+		// }
+
 		substitute_expression(&mut tokens, operator_pos, operation_value);
 
 		num_expressions -= 1;
@@ -68,32 +76,34 @@ fn find_next_operator_pos(input: &Vec<Token>, lower_bound: Option<usize>, upper_
 	let lower_bound = lower_bound.unwrap_or(0);
 	let upper_bound = upper_bound.unwrap_or(input.len() - 1);
 
-	let mut multiply_pos = usize::MAX;
-	let mut divide_pos = usize::MAX;
 	let mut add_pos = usize::MAX;
 	let mut subtract_pos = usize::MAX;
+	let mut multiply_pos = usize::MAX;
+	let mut divide_pos = usize::MAX;
 
 	for (index, token) in input[lower_bound..=upper_bound].iter().enumerate() {
 		match token {
 			Token::Multiply => {
 				multiply_pos = index + lower_bound;
-				break; // break if found immediately, since mult/div are found first
-			}
+				break; // stop searching if found immediately, since mult/div are processed first
+			},
 			Token::Divide => {
 				divide_pos = index + lower_bound;
 				break;
-			}
+			},
+
 			Token::Add => {
 				if add_pos == usize::MAX { // track only the first
 					add_pos = index + lower_bound;
 					// don't break since there may be multiplication/division to look for still
 				}
-			}
+			},
 			Token::Subtract => {
 				if subtract_pos == usize::MAX {
 					subtract_pos = index + lower_bound;
 				}
 			},
+
 			_ => {}
 		};
 	}
@@ -111,7 +121,10 @@ fn find_next_operator_pos(input: &Vec<Token>, lower_bound: Option<usize>, upper_
 
 
 fn substitute_expression(input: &mut Vec<Token>, operator_position: usize, value: f32) {
-	let _ = mem::replace(&mut input[operator_position - 1], Token::Number(value));
+	// this works too, but is cringe and doesn't look nearly as cool as mem::replace
+	// input[operator_position - 1] = Token::Number(value);
+
+	let _ = std::mem::replace(&mut input[operator_position - 1], Token::Number(value));
 	input.drain(operator_position..=(operator_position + 1));
 }
 
