@@ -17,21 +17,23 @@ fn main() {
 
 	if output.solutions.is_empty() {
 		println!("No solutions found!");
-	} else {
-		let solutions_len = output.solutions.len();
+		println!("Time taken: {:?}", output.time_taken);
+		println!("Solutions considered: {}", output.solutions_considered);
+
+		return;
+	}
 
 
-		println!("Solution{} found!:",
-			if solutions_len > 1 {"s"} else {""}
-		);
+	let solutions_len = output.solutions.len();
 
-		// for sol in output.solutions {
-		// 	println!("{}", sol);
-		// }
+	println!("Solution{} found!:", if solutions_len > 1 {"s"} else {""});
 
-		if config.find_all_solutions == true {
-			println!("Total: {}", solutions_len);
-		}
+	for sol in output.solutions {
+		println!("{}", sol);
+	}
+
+	if config.find_all_solutions == true {
+		println!("Total: {}", solutions_len);
 	}
 
 
