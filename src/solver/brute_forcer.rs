@@ -7,6 +7,17 @@ use super::ParenthesesPermutator;
 
 
 
+
+pub struct BruteForcerOutput {
+	pub solutions: Vec<String>,
+	pub solutions_considered: u64,
+
+	pub time_taken: Duration
+}
+
+
+
+
 pub fn brute_force(config: &Config) -> BruteForcerOutput {
 	let starting_time = Instant::now();
 
@@ -298,13 +309,4 @@ fn test_brute_forcer() {
 
 	let mut computation_6 = brute_force(&config_6);
 	assert_eq!(evaluator::evaluate(&computation_6.solutions.pop().unwrap()), 11.0);
-}
-
-
-
-pub struct BruteForcerOutput {
-	pub solutions: Vec<String>,
-	pub solutions_considered: u64,
-
-	pub time_taken: Duration
 }

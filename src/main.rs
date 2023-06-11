@@ -1,5 +1,8 @@
 mod io_reader;
 
+mod profile;
+use profile::is_using_profile;
+
 mod configurator;
 use configurator::Configurator;
 
@@ -7,8 +10,14 @@ mod solver;
 
 
 
+
 fn main() {
+	// TODO: cleanup main
 	let mut configurator = Configurator::new();
+
+	// don't print if debugging via flamegraph
+	let print_solutions = !is_using_profile("flamegraph");
+
 
 	let config = configurator.build_config();
 
@@ -28,9 +37,12 @@ fn main() {
 
 	println!("Solution{} found!:", if solutions_len > 1 {"s"} else {""});
 
-	for sol in output.solutions {
-		println!("{}", sol);
+	if print_solutions == true {
+		for sol in output.solutions {
+			println!("{}", sol);
+		}
 	}
+
 
 	if solutions_len > 1 {
 		println!("Total: {}", solutions_len);
