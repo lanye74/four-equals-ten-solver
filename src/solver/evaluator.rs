@@ -45,7 +45,7 @@ pub fn evaluate(expression: &String) -> f32 {
 		}
 
 		// remove unneeded parentheses
-		remove_parentheses(&mut tokens);
+		remove_parentheses(&mut tokens, lparen_pos, rparen_pos);
 	}
 
 
@@ -104,10 +104,10 @@ fn substitute_expression(input: &mut Vec<Token>, operator_position: usize, value
 
 
 
-fn remove_parentheses(input: &mut Vec<Token>) {
+fn remove_parentheses(input: &mut Vec<Token>, lparen_pos: usize, rparen_pos: usize) {
 	// ...this was also unreasonably complicated. oopsie
-	input.remove(find_token(input, Token::LParen));
-	input.remove(find_token(input, Token::RParen));
+	input.remove(rparen_pos); // remove first as doing lparen first would ajust rparen pos in the vec (also one less element is moved, which is rparen itself)
+	input.remove(lparen_pos);
 }
 
 
