@@ -38,8 +38,8 @@ pub fn evaluate(expression: &String) -> f32 {
 			// replace [..., operand_one, operation, operand_two, ...] with [..., result, ...]
 			substitute_expression(&mut tokens, operator_pos, operation_value);
 
-			// rparen has moved because of substitution. update it
-			rparen_pos = find_token(&tokens[lparen_pos..], Token::RParen) + lparen_pos;
+			// rparen has moved because of substitution (this will always be by 2, since substitute_expression replaces one element and removes two). update it
+			rparen_pos -= 2;
 
 			num_expressions -= 1;
 		}
@@ -105,7 +105,6 @@ fn substitute_expression(input: &mut Vec<Token>, operator_position: usize, value
 
 
 fn remove_parentheses(input: &mut Vec<Token>, lparen_pos: usize, rparen_pos: usize) {
-	// ...this was also unreasonably complicated. oopsie
 	input.remove(rparen_pos); // remove first as doing lparen first would ajust rparen pos in the vec (also one less element is moved, which is rparen itself)
 	input.remove(lparen_pos);
 }

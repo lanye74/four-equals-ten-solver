@@ -7,3 +7,7 @@
 - option to deduplicate pemdas-equivalent parentheses ("simplify solutions"?)
 	- e.g. (1+2)+3+4 = 1+2+3+4. remove parentheses solution
 - support command-line args
+- look into removing tokenizer::tokenize.
+	- i found that a quick and dirty implementation changing build_expression\[_with_parentheses] to build a Vec&lt;Token&gt; improved performance greatly
+	- roughly 3.7s --> 2.7s for n=6 which is... a lot
+	- however, the tradeoff is that it's harder to display solutions now (as they're not strings)
