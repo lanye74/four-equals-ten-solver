@@ -13,7 +13,7 @@ pub fn evaluate(expression: &String) -> f32 {
 
 	// if there is a set of parentheses
 	if lparen_pos != usize::MAX {
-		let mut rparen_pos = find_token(&tokens, Token::RParen);
+		let mut rparen_pos = find_token(&tokens[lparen_pos..], Token::RParen) + lparen_pos;
 
 		// calculate number of expressions to evaluate inside the parentheses
 		// position of tokens in parentheses = (lparen + 1, rparen - 1)
@@ -39,7 +39,7 @@ pub fn evaluate(expression: &String) -> f32 {
 			substitute_expression(&mut tokens, operator_pos, operation_value);
 
 			// rparen has moved because of substitution. update it
-			rparen_pos = find_token(&tokens, Token::RParen);
+			rparen_pos = find_token(&tokens[lparen_pos..], Token::RParen) + lparen_pos;
 
 			num_expressions -= 1;
 		}

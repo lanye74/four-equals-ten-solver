@@ -36,11 +36,11 @@ fn main() {
 
 	println!("Solution{} found!:", if solutions_len > 1 {"s"} else {""});
 
-	// if print_solutions == true {
-	// 	for sol in output.solutions {
-	// 		println!("{}", sol);
-	// 	}
-	// }
+	if print_solutions == true {
+		for sol in output.solutions {
+			println!("{}", sol);
+		}
+	}
 
 
 	if solutions_len > 1 {
