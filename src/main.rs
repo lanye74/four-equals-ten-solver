@@ -10,7 +10,6 @@ mod solver;
 
 
 
-
 fn main() {
 	// TODO: cleanup main
 	let mut configurator = Configurator::new();

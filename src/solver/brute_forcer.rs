@@ -7,14 +7,12 @@ use super::ParenthesesPermutator;
 
 
 
-
 pub struct BruteForcerOutput {
 	pub solutions: Vec<String>,
 	pub solutions_considered: u64,
 
 	pub time_taken: Duration
 }
-
 
 
 
@@ -119,7 +117,7 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 
 
 
-fn build_expression(number_permutation: &Vec<u8>, operator_permutation: &Vec<char>) -> String {
+fn build_expression(number_permutation: &[u8], operator_permutation: &[char]) -> String {
 	let input_len = number_permutation.len();
 
 	let mut expression_builder = String::with_capacity(input_len + operator_permutation.len());
@@ -138,7 +136,7 @@ fn build_expression(number_permutation: &Vec<u8>, operator_permutation: &Vec<cha
 
 
 
-fn build_expression_with_parentheses(number_permutation: &Vec<u8>, operator_permutation: &Vec<char>, (lparen_pos, rparen_pos): (usize, usize)) -> String {
+fn build_expression_with_parentheses(number_permutation: &[u8], operator_permutation: &[char], (lparen_pos, rparen_pos): (usize, usize)) -> String {
 	let input_len = number_permutation.len();
 
 	let mut expression_builder = String::with_capacity(input_len + operator_permutation.len() + 2);

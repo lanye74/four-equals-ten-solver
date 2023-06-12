@@ -72,7 +72,8 @@ pub fn evaluate(expression: &String) -> f32 {
 
 
 
-fn find_next_operator_pos(input: &Vec<Token>, lower_bound: Option<usize>, upper_bound: Option<usize>) -> usize {
+// as badly as i wish i could take a bounds: Option<(usize, usize)>, it is slower for some reason
+fn find_next_operator_pos(input: &[Token], lower_bound: Option<usize>, upper_bound: Option<usize>) -> usize {
 	let lower_bound = lower_bound.unwrap_or(0);
 	let upper_bound = upper_bound.unwrap_or(input.len() - 1);
 
@@ -157,7 +158,7 @@ fn evaluate_expression(expression_slice: &[Token]) -> f32 {
 
 
 
-fn find_token(input: &Vec<Token>, token: Token) -> usize {
+fn find_token(input: &[Token], token: Token) -> usize {
 	return input.iter()
 		.position(|element| *element == token)
 		.unwrap_or(usize::MAX);

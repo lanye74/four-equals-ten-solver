@@ -66,7 +66,7 @@ impl IOReader {
 		return match result.to_ascii_lowercase().as_str() {
 			"y" => true,
 			"n" => false,
-			"" => default.unwrap_or_else(|| panic!("Invalid input!")),
+			"" => default.expect("Invalid input!"),
 			_ => panic!("Invalid input!")
 		};
 	}

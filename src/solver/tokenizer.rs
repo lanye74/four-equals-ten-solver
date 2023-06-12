@@ -40,11 +40,10 @@ fn map_char_to_token(character: char) -> Token {
 		'(' => Token::LParen,
 		')' => Token::RParen,
 
-		digit_as_char => {
-			return Token::Number(digit_as_char.to_digit(10)
+		digit_as_char => Token::Number(
+				digit_as_char.to_digit(10)
 				.expect("map_char_to_token received invalid input!") as f32
-			);
-		}
+			)
 	};
 }
 
@@ -53,14 +52,14 @@ fn map_char_to_token(character: char) -> Token {
 #[cfg(test)]
 #[test]
 fn test_tokenizer() {
-	fn vecs_are_equal<T: std::cmp::PartialEq>(vec1: Vec<T>, vec2: Vec<T>) -> bool {
+	fn vecs_are_equal<T: std::cmp::PartialEq>(vec1: &[T], vec2: &[T]) -> bool {
 		if vec1.len() != vec2.len() {
 			return false;
 		}
 
 		// god i love iterators
-		return vec1.into_iter()
-			.zip(vec2.into_iter())
+		return vec1.iter()
+			.zip(vec2.iter())
 			.all(|(el1, el2)| el1 == el2);
 	}
 
@@ -76,7 +75,7 @@ fn test_tokenizer() {
 	];
 
 
-	let are_equal = vecs_are_equal(result, expected);
+	let are_equal = vecs_are_equal(&result, &expected);
 
 	assert!(are_equal == true, "tokenization does not match expected!");
 }
