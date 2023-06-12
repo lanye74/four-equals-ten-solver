@@ -24,7 +24,8 @@ pub fn evaluate(expression: &String) -> f32 {
 		while num_expressions > 0 {
 			// find where the next operator is (mult/div - add/sub)
 			// TODO: possibly find all operator positions in the string, and use an iter to find next
-			let operator_pos = find_next_operator_pos(&tokens, Some(lparen_pos), Some(rparen_pos));
+			// lparen_pos is added to the index to adjust for taking a slice
+			let operator_pos = find_next_operator_pos(&tokens[lparen_pos..=rparen_pos]) + lparen_pos;
 
 			// compute the expression
 			let operation_value = evaluate_expression(&tokens[(operator_pos - 1)..=(operator_pos + 1)]);
@@ -53,7 +54,7 @@ pub fn evaluate(expression: &String) -> f32 {
 	let mut num_expressions = (input_len - 1) / 2;
 
 	while num_expressions > 0 {
-		let operator_pos = find_next_operator_pos(&tokens, None, None);
+		let operator_pos = find_next_operator_pos(&tokens);
 
 		let operation_value = evaluate_expression(&tokens[(operator_pos - 1)..=(operator_pos + 1)]);
 
@@ -72,51 +73,23 @@ pub fn evaluate(expression: &String) -> f32 {
 
 
 
-// as badly as i wish i could take a bounds: Option<(usize, usize)>, it is slower for some reason
-fn find_next_operator_pos(input: &[Token], lower_bound: Option<usize>, upper_bound: Option<usize>) -> usize {
-	let lower_bound = lower_bound.unwrap_or(0);
-	let upper_bound = upper_bound.unwrap_or(input.len() - 1);
-
+fn find_next_operator_pos(input: &[Token]) -> usize {
 	let mut add_pos = usize::MAX;
 	let mut subtract_pos = usize::MAX;
-	let mut multiply_pos = usize::MAX;
-	let mut divide_pos = usize::MAX;
 
-	for (index, token) in input[lower_bound..=upper_bound].iter().enumerate() {
+	for (index, token) in input.iter().enumerate() {
 		match token {
-			Token::Multiply => {
-				multiply_pos = index + lower_bound;
-				break; // stop searching if found immediately, since mult/div are processed first
-			},
-			Token::Divide => {
-				divide_pos = index + lower_bound;
-				break;
-			},
+			Token::Multiply | Token::Divide => return index,
 
-			Token::Add => {
-				if add_pos == usize::MAX { // track only the first
-					add_pos = index + lower_bound;
-					// don't break since there may be multiplication/division to look for still
-				}
-			},
-			Token::Subtract => {
-				if subtract_pos == usize::MAX {
-					subtract_pos = index + lower_bound;
-				}
-			},
+			Token::Add if add_pos == usize::MAX => add_pos = index,
+			Token::Subtract if subtract_pos == usize::MAX => subtract_pos = index,
 
 			_ => {}
 		};
 	}
 
 
-	let mut operator_pos = std::cmp::min(multiply_pos, divide_pos);
-
-	if operator_pos == usize::MAX {
-		operator_pos = std::cmp::min(add_pos, subtract_pos);
-	}
-
-	return operator_pos;
+	return std::cmp::min(add_pos, subtract_pos);
 }
 
 
