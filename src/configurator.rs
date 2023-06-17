@@ -15,16 +15,16 @@ impl Configurator {
 		};
 	}
 
-	pub fn build_config(&mut self) -> Config {
-		let input_digits = self.get_input_digits();
+	pub fn build_config(&mut self) -> Result<Config, &'static str> {
+		let input_digits = self.get_input_digits()?;
 		let enabled_operations = self.get_enabled_operations();
 
 		let target_number = self.get_target_number();
 
-		let find_all_solutions = self.get_find_all_solutions();
-		let solve_with_parentheses = self.get_solve_with_parentheses();
+		let find_all_solutions = self.get_find_all_solutions()?;
+		let solve_with_parentheses = self.get_solve_with_parentheses()?;
 
-		return Config {
+		return Ok(Config {
 			input_digits,
 			enabled_operations,
 
@@ -32,10 +32,10 @@ impl Configurator {
 
 			find_all_solutions,
 			solve_with_parentheses
-		};
+		});
 	}
 
-	fn get_input_digits(&mut self) -> Vec<u8> {
+	fn get_input_digits(&mut self) -> Result<Vec<u8>, &'static str> {
 		let input_digits = self.io_reader.read("Enter your digits: ");
 
 		let input_digits = input_digits
@@ -45,32 +45,34 @@ impl Configurator {
 			.collect::<Vec<u8>>();
 
 
-		assert!(input_digits.len() > 2, "At least 3 digits must be provided!");
+		if input_digits.len() < 3 {
+			return Err("At least 3 digits must be provided!");
+		}
 
-		return input_digits;
+		return Ok(input_digits);
 	}
 
 	fn get_enabled_operations(&mut self) -> String {
-		let result = self.io_reader.read_with_default("Enter your available non-parentheses operations (default: all): ", String::from("+-*/"));
+		let operations = self.io_reader.read_with_default("Enter your available non-parentheses operations (default: all): ", String::from("+-*/"));
 
-		let result = result
+		let operations = operations
 			.chars()
 			.filter(|&char| char == '+' || char == '-' || char == '*' || char == '/')
 			.collect::<String>();
 
 
-		return result;
+		return operations;
 	}
 
 	fn get_target_number(&mut self) -> f32 {
 		return self.io_reader.read_float_with_default("Enter your target number (default: 10): ", 10.0);
 	}
 
-	fn get_find_all_solutions(&mut self) -> bool {
+	fn get_find_all_solutions(&mut self) -> Result<bool, &'static str> {
 		return self.io_reader.yn_prompt("Do you want to find all solutions? Y/N (default: Y): ", Some(true));
 	}
 
-	fn get_solve_with_parentheses(&mut self) -> bool {
+	fn get_solve_with_parentheses(&mut self) -> Result<bool, &'static str> {
 		return self.io_reader.yn_prompt("Do you want to find solutions with parentheses? Y/N (default: Y): ", Some(true));
 	}
 }

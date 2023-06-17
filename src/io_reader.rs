@@ -59,16 +59,15 @@ impl IOReader {
 
 // extension methods of read, read_line, and read_with_default
 impl IOReader {
-	pub fn yn_prompt(&mut self, prompt: &'static str, default: Option<bool>) -> bool {
+	pub fn yn_prompt(&mut self, prompt: &'static str, default: Option<bool>) -> Result<bool, &'static str> {
 		let result = self.read(prompt);
 
-
 		return match result.to_ascii_lowercase().as_str() {
-			"y" => true,
-			"n" => false,
-			"" => default.expect("Invalid input!"),
-			_ => panic!("Invalid input!")
-		};
+			"y" => Ok(true),
+			"n" => Ok(false),
+			// Option --> Result
+			_ => default.ok_or("Invalid input!")
+		}
 	}
 
 	pub fn read_float_with_default(&mut self, prompt: &'static str, default: f32) -> f32 {
