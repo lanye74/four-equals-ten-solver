@@ -74,6 +74,7 @@ impl Iterator for OperatorPermutator<'_> {
 
 
 pub struct OperatorMapper {
+	// TODO: use Arc here? refer to video i watcjed
 	map: Vec<char>
 }
 

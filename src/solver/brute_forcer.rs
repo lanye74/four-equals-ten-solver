@@ -48,6 +48,15 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 
 	println!("Finding solutions...");
 
+	// number permutation len + operator permutation len (which is equal to number permutation len, -1)
+	let mut expression_builder_without_parentheses = String::with_capacity(number_permutations[0].len() * 2 - 1);
+
+	// +2 for paren
+	let mut expression_builder_with_parentheses = String::with_capacity(number_permutations[0].len() * 2 - 1 + 2);
+
+	// having two of these is faster than one, probably due to their differing capacity
+
+
 	// n! permutations, assuming no duplicates
 	for number_permutation in number_permutations {
 		let operator_permutator = OperatorPermutator::new(&operator_mapper, input_len - 1);
@@ -57,13 +66,13 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 		for operator_permutation in operator_permutator {
 			solutions_considered += 1;
 
-			let expression = build_expression(&number_permutation, &operator_permutation);
+			update_expression(&mut expression_builder_without_parentheses, &number_permutation, &operator_permutation);
 
-			let result = evaluator::evaluate(&expression);
+			let result = evaluator::evaluate(&expression_builder_without_parentheses);
 
 			if result == target_number {
 				// winner found!
-				solutions.push(expression);
+				solutions.push(expression_builder_without_parentheses.clone());
 
 				if find_all_solutions == false {
 					return BruteForcerOutput {
@@ -83,13 +92,13 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 				for paren_pos in parentheses_permutator {
 					solutions_considered += 1;
 
-					let expression = build_expression_with_parentheses(&number_permutation, &operator_permutation, paren_pos);
+					update_expression_with_parentheses(&mut expression_builder_with_parentheses, &number_permutation, &operator_permutation, paren_pos);
 
-					let result = evaluator::evaluate(&expression);
+					let result = evaluator::evaluate(&expression_builder_with_parentheses);
 
 
 					if result == target_number {
-						solutions.push(expression);
+						solutions.push(expression_builder_with_parentheses.clone());
 
 						if find_all_solutions == false {
 							return BruteForcerOutput {
@@ -117,10 +126,10 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 
 
 
-fn build_expression(number_permutation: &[u8], operator_permutation: &[char]) -> String {
+fn update_expression(expression_builder: &mut String, number_permutation: &[u8], operator_permutation: &[char]) {
 	let input_len = number_permutation.len();
 
-	let mut expression_builder = String::with_capacity(input_len + operator_permutation.len());
+	expression_builder.clear();
 
 	for i in 0..input_len {
 		expression_builder.push(char::from_digit(number_permutation[i] as u32, 10).unwrap());
@@ -130,16 +139,14 @@ fn build_expression(number_permutation: &[u8], operator_permutation: &[char]) ->
 			expression_builder.push(operator_permutation[i]);
 		}
 	}
-
-	return expression_builder;
 }
 
 
 
-fn build_expression_with_parentheses(number_permutation: &[u8], operator_permutation: &[char], (lparen_pos, rparen_pos): (usize, usize)) -> String {
+fn update_expression_with_parentheses(expression_builder: &mut String, number_permutation: &[u8], operator_permutation: &[char], (lparen_pos, rparen_pos): (usize, usize)) {
 	let input_len = number_permutation.len();
 
-	let mut expression_builder = String::with_capacity(input_len + operator_permutation.len() + 2);
+	expression_builder.clear();
 
 	// build expression
 	for i in 0..input_len {
@@ -158,8 +165,6 @@ fn build_expression_with_parentheses(number_permutation: &[u8], operator_permuta
 			expression_builder.push(operator_permutation[i]);
 		}
 	}
-
-	return expression_builder;
 }
 
 
