@@ -1,12 +1,10 @@
-pub fn is_using_profile(profile_name: &'static str) -> bool {
-	let exe_path = std::env::args().nth(0);
-
-	// honestly i prefer this pattern over if let
-	return exe_path.is_some_and(|exe_path| {
-		let exe_dir = exe_path.split(std::path::MAIN_SEPARATOR)
-			.nth_back(1);
-
-		// return false if None, else return the value of the closure
-		return exe_dir.is_some_and(|dir| dir == profile_name);
-	});
+pub fn get_cargo_profile() -> String {
+	// i feel like this could be simplified but o well
+	return std::env::args()
+		.nth(0) // exe path
+		.unwrap_or_default()
+		.split(std::path::MAIN_SEPARATOR) // split into its components
+		.nth_back(1) // isolate the directory of the exe
+		.unwrap_or_default()
+		.to_owned();
 }

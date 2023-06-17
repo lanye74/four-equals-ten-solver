@@ -1,5 +1,4 @@
 mod configurator;
-
 pub use configurator::{Config, Configurator};
 
 mod io_reader;
