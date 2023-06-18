@@ -1,4 +1,4 @@
-use std::process;
+use std::{process};
 
 mod profile;
 use profile::get_cargo_profile;
@@ -18,6 +18,8 @@ fn main() {
 	// don't print if debugging via flamegraph
 	let print_solutions = get_cargo_profile().unwrap_or_default() != "flamegraph";
 	// let print_solutions = false;
+
+	// let rapid_mode = env::args().nth(1).is_some_and(|flag| flag == "--rapid");
 
 
 	run(&config, print_solutions);

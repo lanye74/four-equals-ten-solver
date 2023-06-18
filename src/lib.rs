@@ -15,6 +15,8 @@ pub fn run(config: &Config, print_solutions: bool) {
 		println!("No solutions found!");
 		println!("Time taken: {:?}", output.time_taken);
 		println!("Solutions considered: {}", output.solutions_considered);
+
+		return;
 	}
 
 
