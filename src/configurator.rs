@@ -36,7 +36,7 @@ impl Configurator {
 	}
 
 	fn get_input_digits(&mut self) -> Result<Vec<u8>, &'static str> {
-		let input_digits = self.io_reader.read("Enter your digits: ");
+		let input_digits = self.io_reader.read("Enter your digits: ")?;
 
 		let input_digits = input_digits
 			.chars()
