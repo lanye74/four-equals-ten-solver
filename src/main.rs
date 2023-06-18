@@ -16,7 +16,7 @@ fn main() {
 	});
 
 	// don't print if debugging via flamegraph
-	let print_solutions = get_cargo_profile() != "flamegraph";
+	let print_solutions = get_cargo_profile().unwrap_or_default() != "flamegraph";
 	// let print_solutions = false;
 
 
