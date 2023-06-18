@@ -17,7 +17,7 @@ impl Configurator {
 
 	pub fn build_config(&mut self) -> Result<Config, &'static str> {
 		let input_digits = self.get_input_digits()?;
-		let enabled_operations = self.get_enabled_operations();
+		let enabled_operations = self.get_enabled_operations()?;
 
 		let target_number = self.get_target_number();
 
@@ -52,7 +52,7 @@ impl Configurator {
 		return Ok(input_digits);
 	}
 
-	fn get_enabled_operations(&mut self) -> String {
+	fn get_enabled_operations(&mut self) -> Result<String, &'static str> {
 		let operations = self.io_reader.read_with_default("Enter your available non-parentheses operations (default: all): ", String::from("+-*/"));
 
 		let operations = operations
@@ -60,8 +60,12 @@ impl Configurator {
 			.filter(|&char| char == '+' || char == '-' || char == '*' || char == '/')
 			.collect::<String>();
 
+		if operations.len() == 0 {
+			return Err("At least one operation must be supplied!");
+		}
 
-		return operations;
+
+		return Ok(operations);
 	}
 
 	fn get_target_number(&mut self) -> f32 {
