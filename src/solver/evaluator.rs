@@ -41,17 +41,20 @@ pub fn evaluate(expression: &String) -> f32 {
 			// 	return f32::INFINITY;
 			// }
 
-			// replace [..., operand_one, operation, operand_two, ...] with [..., result, ...]
-			substitute_expression(&mut tokens, operator_pos, operation_value);
+
+			if num_expressions == 1 {
+				// this was once separately just substitute_expression and remove_paren, but that's a lot of vec operations. it can be done in one drain
+				substitute_expression_and_remove_paren(&mut tokens, lparen_pos, rparen_pos, operation_value);
+			} else {
+				// replace [..., operand_one, operation, operand_two, ...] with [..., result, ...]
+				substitute_expression(&mut tokens, operator_pos, operation_value);
+			}
 
 			// rparen has moved because of substitution (this will always be by 2, since substitute_expression replaces one element and removes two). update it
 			rparen_pos -= 2;
 
 			num_expressions -= 1;
 		}
-
-		// remove unneeded parentheses
-		remove_parentheses(&mut tokens, lparen_pos, rparen_pos);
 	}
 
 
@@ -70,6 +73,10 @@ pub fn evaluate(expression: &String) -> f32 {
 
 		let operation_value = evaluate_expression(&tokens[(operator_pos - 1)..=(operator_pos + 1)]);
 
+		if num_expressions == 1 {
+			return operation_value;
+		}
+
 		// if operation_value == f32::INFINITY {
 		// 	return f32::INFINITY;
 		// }
@@ -79,7 +86,7 @@ pub fn evaluate(expression: &String) -> f32 {
 		num_expressions -= 1;
 	}
 
-
+	// this will never be reached, but o well
 	return unwrap_token(&tokens[0]);
 }
 
@@ -106,19 +113,19 @@ fn find_next_operator_pos(input: &[Token]) -> usize {
 
 
 
-fn substitute_expression(input: &mut Vec<Token>, operator_position: usize, value: f32) {
+fn substitute_expression(input: &mut Vec<Token>, operator_pos: usize, value: f32) {
 	// this works too, but is cringe and doesn't look nearly as cool as mem::replace
-	// input[operator_position - 1] = Token::Number(value);
+	// input[operator_pos - 1] = Token::Number(value);
 
-	let _ = std::mem::replace(&mut input[operator_position - 1], Token::Number(value));
-	input.drain(operator_position..=(operator_position + 1));
+	let _ = std::mem::replace(&mut input[operator_pos - 1], Token::Number(value));
+	input.drain(operator_pos..=(operator_pos + 1));
 }
 
 
 
-fn remove_parentheses(input: &mut Vec<Token>, lparen_pos: usize, rparen_pos: usize) {
-	input.remove(rparen_pos); // remove first as doing lparen first would ajust rparen pos in the vec (also one less element is moved, which is rparen itself)
-	input.remove(lparen_pos);
+fn substitute_expression_and_remove_paren(input: &mut Vec<Token>, lparen_pos: usize, rparen_pos: usize, value: f32) {
+	let _ = std::mem::replace(&mut input[lparen_pos], Token::Number(value));
+	input.drain((lparen_pos + 1)..=rparen_pos);
 }
 
 
