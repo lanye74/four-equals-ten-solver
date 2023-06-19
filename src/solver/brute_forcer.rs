@@ -49,12 +49,14 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 	println!("Finding solutions...");
 
 	// number permutation len + operator permutation len (which is equal to number permutation len, -1)
-	let mut expression_builder_without_parentheses = String::with_capacity(number_permutations[0].len() * 2 - 1);
+	let mut expression_builder_without_paren = String::with_capacity(number_permutations[0].len() * 2 - 1);
+	let mut expression_vec_without_paren = Vec::with_capacity(number_permutations[0].len() * 2 - 1);
 
 	// +2 for paren
-	let mut expression_builder_with_parentheses = String::with_capacity(number_permutations[0].len() * 2 - 1 + 2);
+	let mut expression_builder_with_paren = String::with_capacity(number_permutations[0].len() * 2 - 1 + 2);
+	let mut expression_vec_with_paren = Vec::with_capacity(number_permutations[0].len() * 2 - 1 + 2);
 
-	// having two of these is faster than one, probably due to their differing capacity
+	// having two of each of these is faster than one, probably due to their differing capacity
 
 
 	// n! permutations, assuming no duplicates
@@ -66,13 +68,13 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 		for operator_permutation in operator_permutator {
 			solutions_considered += 1;
 
-			update_expression(&mut expression_builder_without_parentheses, &number_permutation, &operator_permutation);
+			update_expression(&mut expression_builder_without_paren, &number_permutation, &operator_permutation);
 
-			let result = evaluator::evaluate(&expression_builder_without_parentheses);
+			let result = evaluator::evaluate(&mut expression_vec_without_paren, &expression_builder_without_paren);
 
 			if result == target_number {
 				// winner found!
-				solutions.push(expression_builder_without_parentheses.clone());
+				solutions.push(expression_builder_without_paren.clone());
 
 				if find_all_solutions == false {
 					return BruteForcerOutput {
@@ -92,13 +94,13 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 				for paren_pos in parentheses_permutator {
 					solutions_considered += 1;
 
-					update_expression_with_parentheses(&mut expression_builder_with_parentheses, &number_permutation, &operator_permutation, paren_pos);
+					update_expression_with_parentheses(&mut expression_builder_with_paren, &number_permutation, &operator_permutation, paren_pos);
 
-					let result = evaluator::evaluate(&expression_builder_with_parentheses);
+					let result = evaluator::evaluate(&mut expression_vec_with_paren, &expression_builder_with_paren);
 
 
 					if result == target_number {
-						solutions.push(expression_builder_with_parentheses.clone());
+						solutions.push(expression_builder_with_paren.clone());
 
 						if find_all_solutions == false {
 							return BruteForcerOutput {
@@ -127,9 +129,9 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 
 
 fn update_expression(expression_builder: &mut String, number_permutation: &[u8], operator_permutation: &[char]) {
-	let input_len = number_permutation.len();
-
 	expression_builder.clear();
+
+	let input_len = number_permutation.len();
 
 	for i in 0..input_len {
 		expression_builder.push(char::from_digit(number_permutation[i] as u32, 10).unwrap());
@@ -144,9 +146,9 @@ fn update_expression(expression_builder: &mut String, number_permutation: &[u8],
 
 
 fn update_expression_with_parentheses(expression_builder: &mut String, number_permutation: &[u8], operator_permutation: &[char], (lparen_pos, rparen_pos): (usize, usize)) {
-	let input_len = number_permutation.len();
-
 	expression_builder.clear();
+
+	let input_len = number_permutation.len();
 
 	// build expression
 	for i in 0..input_len {
@@ -172,10 +174,8 @@ fn update_expression_with_parentheses(expression_builder: &mut String, number_pe
 fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 	let input_len = input.len();
 
-	let mut output: Vec<Vec<u8>> = vec![];
+	let mut output: Vec<Vec<u8>> = vec![input.clone()];
 	let mut state: Vec<usize> = vec![0; input_len];
-
-	output.push(input.clone());
 
 	let mut pointer = 1;
 
@@ -222,6 +222,8 @@ fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 #[cfg(test)]
 #[test]
 fn test_brute_forcer() {
+	let mut vec = vec![];
+
 	let config_1 = Config {
 		input_digits: vec![8, 2, 7, 1],
 		enabled_operations: String::from("+-*/"),
@@ -234,7 +236,7 @@ fn test_brute_forcer() {
 
 
 	let mut computation_1 = brute_force(&config_1);
-	assert_eq!(evaluator::evaluate(&computation_1.solutions.pop().unwrap()), 10.0);
+	assert_eq!(evaluator::evaluate(&mut vec, &computation_1.solutions.pop().unwrap()), 10.0);
 
 
 	let config_2 = Config {
@@ -248,8 +250,7 @@ fn test_brute_forcer() {
 	};
 
 	let mut computation_2 = brute_force(&config_2);
-	assert_eq!(evaluator::evaluate(&computation_2.solutions.pop().unwrap()), 10.0);
-
+	assert_eq!(evaluator::evaluate(&mut vec, &computation_2.solutions.pop().unwrap()), 10.0);
 
 
 	// with parentheses
@@ -265,7 +266,7 @@ fn test_brute_forcer() {
 	};
 
 	let mut computation_3 = brute_force(&config_3);
-	assert_eq!(evaluator::evaluate(&computation_3.solutions.pop().unwrap()), 10.0);
+	assert_eq!(evaluator::evaluate(&mut vec, &computation_3.solutions.pop().unwrap()), 10.0);
 
 
 	let config_4 = Config {
@@ -279,7 +280,7 @@ fn test_brute_forcer() {
 	};
 
 	let mut computation_4 = brute_force(&config_4);
-	assert_eq!(evaluator::evaluate(&computation_4.solutions.pop().unwrap()), 10.0);
+	assert_eq!(evaluator::evaluate(&mut vec, &computation_4.solutions.pop().unwrap()), 10.0);
 
 
 	// with disabled operations
@@ -295,7 +296,7 @@ fn test_brute_forcer() {
 	};
 
 	let mut computation_5 = brute_force(&config_5);
-	assert_eq!(evaluator::evaluate(&computation_5.solutions.pop().unwrap()), 10.0);
+	assert_eq!(evaluator::evaluate(&mut vec, &computation_5.solutions.pop().unwrap()), 10.0);
 
 
 	// with different target
@@ -311,5 +312,5 @@ fn test_brute_forcer() {
 	};
 
 	let mut computation_6 = brute_force(&config_6);
-	assert_eq!(evaluator::evaluate(&computation_6.solutions.pop().unwrap()), 11.0);
+	assert_eq!(evaluator::evaluate(&mut vec, &computation_6.solutions.pop().unwrap()), 11.0);
 }

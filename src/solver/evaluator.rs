@@ -2,8 +2,12 @@ use super::tokenizer::{self, Token};
 
 
 
-pub fn evaluate(expression: &String) -> f32 {
-	let mut tokens: Vec<Token> = tokenizer::tokenize(expression);
+// assumes vec is empty
+pub fn evaluate(tokens: &mut Vec<Token>, expression: &String) -> f32 {
+	// there's either 0 (first run) or 1 (result of last run) element(s) left... maybe it might be faster to replace it? clear() is pretty efficient tho
+	tokens.clear();
+
+	tokenizer::tokenize(tokens, expression);
 
 	// this function assumes there is only one set of parentheses, and that the input is valid
 	// i might write an input validator later. but for now
@@ -44,10 +48,10 @@ pub fn evaluate(expression: &String) -> f32 {
 
 			if num_expressions == 1 {
 				// this was once separately just substitute_expression and remove_paren, but that's a lot of vec operations. it can be done in one drain
-				substitute_expression_and_remove_paren(&mut tokens, lparen_pos, rparen_pos, operation_value);
+				substitute_expression_and_remove_paren(tokens, lparen_pos, rparen_pos, operation_value);
 			} else {
 				// replace [..., operand_one, operation, operand_two, ...] with [..., result, ...]
-				substitute_expression(&mut tokens, operator_pos, operation_value);
+				substitute_expression(tokens, operator_pos, operation_value);
 			}
 
 			// rparen has moved because of substitution (this will always be by 2, since substitute_expression replaces one element and removes two). update it
@@ -80,7 +84,7 @@ pub fn evaluate(expression: &String) -> f32 {
 		// 	return f32::INFINITY;
 		// }
 
-		substitute_expression(&mut tokens, operator_pos, operation_value);
+		substitute_expression(tokens, operator_pos, operation_value);
 
 		num_expressions -= 1;
 	}
@@ -168,14 +172,16 @@ fn unwrap_token(token: &Token) -> f32 {
 #[cfg(test)]
 #[test]
 fn test_evaluator() {
+	let mut vec = vec![];
+
 	// basic checks
-	assert_eq!(evaluate(&String::from("7*3-(1-3)")), 23.0);
-	assert_eq!(evaluate(&String::from("4/0+1*2")), f32::INFINITY);
+	assert_eq!(evaluate(&mut vec, &String::from("7*3-(1-3)")), 23.0);
+	assert_eq!(evaluate(&mut vec, &String::from("4/0+1*2")), f32::INFINITY);
 
 	// pemdas
-	assert_eq!(evaluate(&String::from("4+3*2")), 10.0);
-	assert_eq!(evaluate(&String::from("3-2-6*6/3")), -11.0);
+	assert_eq!(evaluate(&mut vec, &String::from("4+3*2")), 10.0);
+	assert_eq!(evaluate(&mut vec, &String::from("3-2-6*6/3")), -11.0);
 
 	// the parentheses bug i never caught
-	assert_eq!(evaluate(&String::from("(2+2)+3")), 7.0)
+	assert_eq!(evaluate(&mut vec, &String::from("(2+2)+3")), 7.0);
 }
