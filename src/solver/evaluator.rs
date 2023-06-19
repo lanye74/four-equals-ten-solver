@@ -67,7 +67,6 @@ pub fn evaluate(expression: &String) -> f32 {
 			// this is the last operation so its position is already guaranteed
 			1
 		} else {
-			// lparen_pos is added to the index to adjust for taking a slice
 			find_next_operator_pos(&tokens)
 		};
 
