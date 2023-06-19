@@ -24,8 +24,14 @@ pub fn evaluate(expression: &String) -> f32 {
 		while num_expressions > 0 {
 			// find where the next operator is (mult/div - add/sub)
 			// TODO: possibly find all operator positions in the string, and use an iter to find next
-			// lparen_pos is added to the index to adjust for taking a slice
-			let operator_pos = find_next_operator_pos(&tokens[lparen_pos..=rparen_pos]) + lparen_pos;
+			let operator_pos = if num_expressions == 1 {
+				// this is the last operation so its position is already guaranteed
+				lparen_pos + 2
+			} else {
+				// lparen_pos is added to the index to adjust for taking a slice
+				find_next_operator_pos(&tokens[lparen_pos..=rparen_pos]) + lparen_pos
+			};
+
 
 			// compute the expression
 			let operation_value = evaluate_expression(&tokens[(operator_pos - 1)..=(operator_pos + 1)]);
@@ -54,7 +60,13 @@ pub fn evaluate(expression: &String) -> f32 {
 	let mut num_expressions = (input_len - 1) / 2;
 
 	while num_expressions > 0 {
-		let operator_pos = find_next_operator_pos(&tokens);
+		let operator_pos = if num_expressions == 1 {
+			// this is the last operation so its position is already guaranteed
+			1
+		} else {
+			// lparen_pos is added to the index to adjust for taking a slice
+			find_next_operator_pos(&tokens)
+		};
 
 		let operation_value = evaluate_expression(&tokens[(operator_pos - 1)..=(operator_pos + 1)]);
 
