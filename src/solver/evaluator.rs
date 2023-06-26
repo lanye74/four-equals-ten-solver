@@ -25,35 +25,35 @@ pub fn evaluate(tokens: &mut Vec<Token>, expression: &String) -> f32 {
 
 		// loop over every expression
 		while num_expressions > 0 {
-			// find where the next operator is (mult/div - add/sub)
-			// TODO: possibly find all operator positions in the string, and use an iter to find next
-			let operator_pos = if num_expressions == 1 {
-				// this is the last operation so its position is already guaranteed
-				lparen_pos + 2
-			} else {
-				// lparen_pos is added to the index to adjust for taking a slice
-				find_next_operator_pos(&tokens[lparen_pos..=rparen_pos]) + lparen_pos
-			};
+			if num_expressions != 1 {
+				// find where the next operator is (mult/div - add/sub)
+				// TODO: possibly find all operator positions in the string, and use an iter to find next
+				let operator_pos = find_next_operator_pos(&tokens[lparen_pos..=rparen_pos]) + lparen_pos;
+
+				// compute the expression
+				let operation_value = evaluate_expression(&tokens[(operator_pos - 1)..=(operator_pos + 1)]);
+
+				// NOTE TO SELF: you cannot immediately return here if evaluate_expression is f32::INFINITY, because x/INF = 0
+				// i verified this in 4=10; the game also believes that x/INF = 0
+				// e.g. 2/(6/0)+7+9/3 = 10
+				// if the game support 6 digit inputs, it would also say that equaled 10
+				// in the base game, with 4 digit inputs, early returning on operation_value = f32::INFINITY would be a valid optimization
+				// you need at least 5 digits to encounter this technicality
+				// 1/(1/0)+9+1 = 10
 
 
-			// compute the expression
-			let operation_value = evaluate_expression(&tokens[(operator_pos - 1)..=(operator_pos + 1)]);
-
-			// NOTE TO SELF: you cannot immediately return here if evaluate_expression is f32::INFINITY, because x/INF = 0
-			// i verified this in 4=10; the game also believes that x/INF = 0
-			// e.g. 2/(6/0)+7+9/3 = 10
-			// if the game support 6 digit inputs, it would also say that equaled 10
-			// in the base game, with 4 digit inputs, early returning on operation_value = f32::INFINITY would be a valid optimization
-			// you need at least 5 digits to encounter this technicality
-			// 1/(1/0)+9+1 = 10
-
-
-			if num_expressions == 1 {
-				// this was once separately just substitute_expression and remove_paren, but that's a lot of vec operations. it can be done in one drain
-				substitute_expression_and_remove_paren(tokens, lparen_pos, rparen_pos, operation_value);
-			} else {
 				// replace [..., operand_one, operation, operand_two, ...] with [..., result, ...]
 				substitute_expression(tokens, operator_pos, operation_value);
+			} else {
+				// this is the last operation so its position is already guaranteed
+				let operator_pos = lparen_pos + 2;
+
+				// compute the expression
+				let operation_value = evaluate_expression(&tokens[(operator_pos - 1)..=(operator_pos + 1)]);
+
+				substitute_expression_and_remove_paren(tokens, lparen_pos, rparen_pos, operation_value);
+
+				break;
 			}
 
 			// rparen has moved because of substitution (this will always be by 2, since substitute_expression replaces one element and removes two). update it
@@ -69,26 +69,23 @@ pub fn evaluate(tokens: &mut Vec<Token>, expression: &String) -> f32 {
 	let mut num_expressions = (input_len - 1) / 2;
 
 	while num_expressions > 0 {
-		let operator_pos = if num_expressions == 1 {
-			// this is the last operation so its position is already guaranteed
-			1
+		if num_expressions != 1 {
+			let operator_pos = find_next_operator_pos(&tokens);
+
+			let operation_value = evaluate_expression(&tokens[(operator_pos - 1)..=(operator_pos + 1)]);
+
+			substitute_expression(tokens, operator_pos, operation_value);
 		} else {
-			find_next_operator_pos(&tokens)
-		};
+			let operation_value = evaluate_expression(&tokens);
 
-		let operation_value = evaluate_expression(&tokens[(operator_pos - 1)..=(operator_pos + 1)]);
-
-		if num_expressions == 1 {
 			return operation_value;
 		}
 
 
-		substitute_expression(tokens, operator_pos, operation_value);
-
 		num_expressions -= 1;
 	}
 
-	// this will never be reached, but o well
+	// this will never be reached, but cargo throws a fit if i don't
 	return unwrap_number_token(&tokens[0]);
 }
 
