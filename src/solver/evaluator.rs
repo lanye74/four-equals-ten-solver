@@ -2,7 +2,6 @@ use super::tokenizer::{self, Token};
 
 
 
-// assumes vec is empty
 pub fn evaluate(tokens: &mut Vec<Token>, expression: &String) -> f32 {
 	// there's either 0 (first run) or 1 (result of last run) element(s) left... maybe it might be faster to replace it? clear() is pretty efficient tho
 	tokens.clear();
@@ -40,10 +39,13 @@ pub fn evaluate(tokens: &mut Vec<Token>, expression: &String) -> f32 {
 			// compute the expression
 			let operation_value = evaluate_expression(&tokens[(operator_pos - 1)..=(operator_pos + 1)]);
 
-			// why does this reduce the amount of solutions found for 602793? TODO: compute twice, once with this check, once without; sort, dedup, examine the remaining
-			// if operation_value == f32::INFINITY {
-			// 	return f32::INFINITY;
-			// }
+			// NOTE TO SELF: you cannot immediately return here if evaluate_expression is f32::INFINITY, because x/INF = 0
+			// i verified this in 4=10; the game also believes that x/INF = 0
+			// e.g. 2/(6/0)+7+9/3 = 10
+			// if the game support 6 digit inputs, it would also say that equaled 10
+			// in the base game, with 4 digit inputs, early returning on operation_value = f32::INFINITY would be a valid optimization
+			// you need at least 5 digits to encounter this technicality
+			// 1/(1/0)+9+1 = 10
 
 
 			if num_expressions == 1 {
@@ -80,9 +82,6 @@ pub fn evaluate(tokens: &mut Vec<Token>, expression: &String) -> f32 {
 			return operation_value;
 		}
 
-		// if operation_value == f32::INFINITY {
-		// 	return f32::INFINITY;
-		// }
 
 		substitute_expression(tokens, operator_pos, operation_value);
 
@@ -90,7 +89,7 @@ pub fn evaluate(tokens: &mut Vec<Token>, expression: &String) -> f32 {
 	}
 
 	// this will never be reached, but o well
-	return unwrap_token(&tokens[0]);
+	return unwrap_number_token(&tokens[0]);
 }
 
 
@@ -133,11 +132,11 @@ fn substitute_expression_and_remove_paren(input: &mut Vec<Token>, lparen_pos: us
 
 
 
-//          vec: [1 + 2 + 3 + 4]
+//         vec: [1 + 2 + 3 + 4]
 // slice contents:   |   |
 fn evaluate_expression(expression_slice: &[Token]) -> f32 {
-	let operand_one = unwrap_token(&expression_slice[0]);
-	let operand_two = unwrap_token(&expression_slice[2]);
+	let operand_one = unwrap_number_token(&expression_slice[0]);
+	let operand_two = unwrap_number_token(&expression_slice[2]);
 
 	// operator
 	return match &expression_slice[1] {
@@ -160,10 +159,10 @@ fn find_token(input: &[Token], token: Token) -> usize {
 
 
 
-fn unwrap_token(token: &Token) -> f32 {
+fn unwrap_number_token(token: &Token) -> f32 {
 	return match token {
 		Token::Number(value) => *value,
-		_ => panic!("unwrap_token called with non-number!")
+		_ => panic!("unwrap_number_token called with non-number variant!")
 	};
 }
 

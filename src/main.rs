@@ -1,4 +1,4 @@
-use std::{process};
+use std::process;
 
 mod profile;
 use profile::get_cargo_profile;
