@@ -1,3 +1,5 @@
+use std::io::{self, Write};
+
 mod configurator;
 pub use configurator::{Config, Configurator};
 
@@ -25,8 +27,10 @@ pub fn run(config: &Config, print_solutions: bool) {
 	println!("Solution{} found!:", if solutions_len > 1 {"s"} else {""});
 
 	if print_solutions == true {
+		let mut lock = io::stdout().lock();
+
 		for sol in output.solutions {
-			println!("{}", sol);
+			let _ = writeln!(lock, "{}", sol);
 		}
 	}
 
