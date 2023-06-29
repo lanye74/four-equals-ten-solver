@@ -13,7 +13,9 @@ pub enum Token {
 
 
 // TODO: simplify this using collect_into when it hits stable (see https://github.com/rust-lang/rust/issues/94780)
-pub fn tokenize(output: &mut Vec<Token>, expression: &String) {
+pub fn tokenize_into(output: &mut Vec<Token>, expression: &String) {
+	output.clear();
+
 	let mapped = expression
 		.chars()
 		.map(map_char_to_token);
@@ -60,7 +62,7 @@ fn test_tokenizer() {
 	}
 
 	let mut result = vec![];
-	tokenize(&mut result, &String::from("(3*5)/7+0-1*2*9/(8+4)*6"));
+	tokenize_into(&mut result, &String::from("(3*5)/7+0-1*2*9/(8+4)*6"));
 
 	let expected = vec![
 		Token::LParen, Token::Number(3.0), Token::Multiply, Token::Number(5.0), Token::RParen,
@@ -74,4 +76,15 @@ fn test_tokenizer() {
 	let are_equal = vecs_are_equal(&result, &expected);
 
 	assert!(are_equal == true, "tokenization does not match expected!");
+}
+
+
+
+// to simplify my testing functions
+#[cfg(test)]
+pub fn tokenize(expression: &String) -> Vec<Token> {
+	return expression
+		.chars()
+		.map(map_char_to_token)
+		.collect();
 }
