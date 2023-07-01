@@ -64,7 +64,7 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 	for number_permutation in number_permutations {
 		let operator_permutator = OperatorPermutator::new(&operator_mapper, input_len - 1);
 
-		// (# operators enabled)^n permutations
+		// (# operators enabled)^(n - 1) permutations
 		// for low values of n, this ordering of the loops is less efficient; but more efficient for higher values
 		for operator_permutation in operator_permutator {
 			solutions_considered += 1;
@@ -98,7 +98,7 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 				for paren_pos in parentheses_permutator {
 					solutions_considered += 1;
 
-					// possibly pass paren_pos by ref, though it will require mpore dereferencing
+					// possibly pass paren_pos by ref, though it will require more dereferencing
 					build_expression_with_paren_into(&mut expression_builder_with_paren, &number_permutation, &operator_permutation, paren_pos);
 
 					tokenizer::tokenize_into(&mut tokens_vec_with_paren, &expression_builder_with_paren);
@@ -192,17 +192,11 @@ fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 		if state[pointer] < pointer {
 			// neat branchless trick; if pointer is even {0} else {state[pointer]}
 			let pointer_2 = (pointer % 2) * state[pointer];
-
 			input.swap(pointer, pointer_2);
 
-			// TODO: possibly use this to generate all index combinations? as opposed to cloning
-			// i.e. return [[0, 1, 2, 3], [0, 1, 3, 2], ... [3, 2, 1, 0]]
-			// it would help w memory but i dunno about memory access
-			// if i create a numberpermutation struct it might be okay
 			output.push(input.clone());
 
 			state[pointer] += 1;
-
 			pointer = 1;
 		} else {
 			state[pointer] = 0;
@@ -221,6 +215,7 @@ fn generate_permutations(input: &mut Vec<u8>) -> Vec<Vec<u8>> {
 	}
 
 
+	// TODO: this really should return a flatmap with a data structure providing iterator/index methods
 	return output;
 }
 

@@ -1,6 +1,6 @@
 pub struct OperatorPermutator<'a> {
-	state: Vec<usize>,
-	state_length: usize,
+	nodes: Vec<usize>,
+	nodes_length: usize,
 	is_maxed: bool,
 
 	operator_mapper: &'a OperatorMapper,
@@ -11,11 +11,9 @@ pub struct OperatorPermutator<'a> {
 
 impl OperatorPermutator<'_> {
 	pub fn new(operator_mapper: &OperatorMapper, num_nodes: usize) -> OperatorPermutator {
-		// let operator_mapper = OperatorMapper::new(&enabled_operations);
-
 		return OperatorPermutator {
-			state_length: num_nodes,
-			state: vec![0; num_nodes],
+			nodes_length: num_nodes,
+			nodes: vec![0; num_nodes],
 
 			unique_operators: operator_mapper.map.len(),
 			operator_mapper,
@@ -25,29 +23,29 @@ impl OperatorPermutator<'_> {
 	}
 
 	fn increment(&mut self) {
-		self.state[0] += 1;
+		self.nodes[0] += 1;
 
 		// wrap values
-		for i in 0..self.state_length {
+		for i in 0..self.nodes_length {
 			// operator is above max value, wrap it
-			if self.state[i] == self.unique_operators  {
-				self.state[i] = 0;
+			if self.nodes[i] == self.unique_operators  {
+				self.nodes[i] = 0;
 
-				if i + 1 == self.state_length {
+				if i + 1 == self.nodes_length {
 					// attempting to wrap the last node
 					self.is_maxed = true;
 
 					break;
 				}
 
-				self.state[i + 1] += 1;
+				self.nodes[i + 1] += 1;
 			}
 		}
 	}
 
 	fn state_as_char_vec(&mut self) -> Vec<char> {
 		// TODO: use collect_into when it becomes stable
-		return self.state.iter()
+		return self.nodes.iter()
 			.map(|&operator| self.operator_mapper.map(operator))
 			.collect();
 	}

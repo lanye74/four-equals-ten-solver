@@ -2,12 +2,17 @@
 
 [package]
 name = "four-equals-ten"
-version = "1.5.0"
+version = "1.5.1"
 edition = "2021"
 repository = "https://github.com/lanye74/four-equals-ten-solver"
 # TODO: add rust-version here when i eventually get to use collect_into
 
 
+[profile.release]
+panic = "abort"
+
+
 [profile.flamegraph]
 inherits = "release"
 debug = true
+panic = "abort"
