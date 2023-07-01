@@ -1,5 +1,7 @@
 use crate::io_reader::IOReader;
 
+use crate::profile::get_cargo_profile;
+
 
 
 pub struct Configurator {
@@ -15,23 +17,26 @@ impl Configurator {
 		};
 	}
 
-	pub fn build_config(&mut self) -> Result<Config, &'static str> {
+	pub fn build_config(&mut self, force_no_print: bool) -> Result<Config, &'static str> {
 		let input_digits = self.get_input_digits()?;
 		let enabled_operations = self.get_enabled_operations()?;
-
 		let target_number = self.get_target_number();
 
 		let find_all_solutions = self.get_find_all_solutions()?;
 		let solve_with_parentheses = self.get_solve_with_parentheses()?;
 
+		// don't print if debugging via flamegraph, or if forcing no print
+		let no_print_solutions = get_cargo_profile().unwrap_or_default() == "flamegraph" || force_no_print;
+
 		return Ok(Config {
 			input_digits,
 			enabled_operations,
-
 			target_number,
 
 			find_all_solutions,
-			solve_with_parentheses
+			solve_with_parentheses,
+
+			no_print_solutions
 		});
 	}
 
@@ -87,9 +92,10 @@ impl Configurator {
 pub struct Config {
 	pub input_digits: Vec<u8>,
 	pub enabled_operations: String,
-
 	pub target_number: f32,
 
 	pub find_all_solutions: bool,
-	pub solve_with_parentheses: bool
+	pub solve_with_parentheses: bool,
+
+	pub no_print_solutions: bool
 }

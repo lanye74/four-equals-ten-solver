@@ -4,13 +4,12 @@ mod configurator;
 pub use configurator::{Config, Configurator};
 
 mod io_reader;
-
+mod profile;
 mod solver;
 
 
 
-// TODO: make print_solutions part of Config
-pub fn run(config: &Config, print_solutions: bool) {
+pub fn run(config: &Config) {
 	let output = solver::brute_force(config);
 
 	if output.solutions.is_empty() {
@@ -26,7 +25,7 @@ pub fn run(config: &Config, print_solutions: bool) {
 
 	println!("Solution{} found!:", if solutions_len > 1 {"s"} else {""});
 
-	if print_solutions == true {
+	if config.no_print_solutions == false {
 		let mut lock = io::stdout().lock();
 
 		for sol in output.solutions {

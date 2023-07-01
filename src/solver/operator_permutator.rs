@@ -28,7 +28,7 @@ impl OperatorPermutator<'_> {
 		// wrap values
 		for i in 0..self.nodes_length {
 			// operator is above max value, wrap it
-			if self.nodes[i] == self.unique_operators  {
+			if self.nodes[i] == self.unique_operators {
 				self.nodes[i] = 0;
 
 				if i + 1 == self.nodes_length {
