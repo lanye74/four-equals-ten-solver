@@ -11,3 +11,6 @@ pub use parentheses_permutator::ParenthesesPermutator;
 
 pub mod tokenizer;
 pub use tokenizer::Token;
+
+mod unsafe_push;
+pub use unsafe_push::UnsafePush;

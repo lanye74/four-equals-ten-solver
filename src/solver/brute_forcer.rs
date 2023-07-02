@@ -7,6 +7,8 @@ use super::{OperatorPermutator, OperatorMapper};
 use super::ParenthesesPermutator;
 use super::tokenizer;
 
+use super::UnsafePush;
+
 
 
 pub struct BruteForcerOutput {
@@ -142,11 +144,11 @@ fn build_expression_into(expression_builder: &mut String, number_permutation: &[
 	let input_len = number_permutation.len();
 
 	for i in 0..input_len {
-		expression_builder.push(char::from_digit(number_permutation[i] as u32, 10).unwrap());
+		expression_builder.unsafe_push(char::from_digit(number_permutation[i] as u32, 10).unwrap());
 
 		// ensures that a dangling operator isn't placed
 		if i != input_len - 1 {
-			expression_builder.push(operator_permutation[i]);
+			expression_builder.unsafe_push(operator_permutation[i]);
 		}
 	}
 }
@@ -161,18 +163,18 @@ fn build_expression_with_paren_into(expression_builder: &mut String, number_perm
 	// build expression
 	for i in 0..input_len {
 		if i == lparen_pos {
-			expression_builder.push('(');
+			expression_builder.unsafe_push('(');
 		}
 
-		expression_builder.push(char::from_digit(number_permutation[i] as u32, 10).unwrap());
+		expression_builder.unsafe_push(char::from_digit(number_permutation[i] as u32, 10).unwrap());
 
 		if i == rparen_pos {
-			expression_builder.push(')');
+			expression_builder.unsafe_push(')');
 		}
 
 		// ensures that a dangling operator isn't placed
 		if i != input_len - 1 {
-			expression_builder.push(operator_permutation[i]);
+			expression_builder.unsafe_push(operator_permutation[i]);
 		}
 	}
 }
