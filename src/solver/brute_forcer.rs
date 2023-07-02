@@ -6,7 +6,6 @@ use super::evaluator;
 use super::{OperatorPermutator, OperatorMapper};
 use super::ParenthesesPermutator;
 use super::tokenizer;
-
 use super::UnsafePush;
 
 
@@ -22,7 +21,6 @@ pub struct BruteForcerOutput {
 
 pub fn brute_force(config: &Config) -> BruteForcerOutput {
 	let starting_time = Instant::now();
-
 
 	// destructure
 	let Config {
@@ -144,7 +142,7 @@ fn build_expression_into(expression_builder: &mut String, number_permutation: &[
 	let input_len = number_permutation.len();
 
 	for i in 0..input_len {
-		expression_builder.unsafe_push(char::from_digit(number_permutation[i] as u32, 10).unwrap());
+		expression_builder.unsafe_push_digit(number_permutation[i]);
 
 		// ensures that a dangling operator isn't placed
 		if i != input_len - 1 {
@@ -166,7 +164,7 @@ fn build_expression_with_paren_into(expression_builder: &mut String, number_perm
 			expression_builder.unsafe_push('(');
 		}
 
-		expression_builder.unsafe_push(char::from_digit(number_permutation[i] as u32, 10).unwrap());
+		expression_builder.unsafe_push_digit(number_permutation[i]);
 
 		if i == rparen_pos {
 			expression_builder.unsafe_push(')');

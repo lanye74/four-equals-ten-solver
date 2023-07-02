@@ -40,11 +40,8 @@ pub fn evaluate_tokens(tokens: &mut Vec<Token>) -> f32 {
 				// replace [..., operand_one, operation, operand_two, ...] with [..., result, ...]
 				substitute_expression(tokens, operator_pos, operation_value);
 			} else {
-				// this is the last operation so its position is already guaranteed
-				let operator_pos = lparen_pos + 2;
-
-				// compute the expression
-				let operation_value = evaluate_expression(&tokens[(operator_pos - 1)..=(operator_pos + 1)]);
+				// this is the last operation so the location of the expression is already guaranteed
+				let operation_value = evaluate_expression(&tokens[(lparen_pos + 1)..=(rparen_pos - 1)]);
 
 				substitute_expression_and_remove_paren(tokens, lparen_pos, rparen_pos, operation_value);
 
