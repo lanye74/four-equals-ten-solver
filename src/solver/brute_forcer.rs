@@ -5,8 +5,7 @@ use crate::configurator::Config;
 use super::evaluator;
 use super::{OperatorPermutator, OperatorMapper};
 use super::ParenthesesPermutator;
-use super::tokenizer;
-use super::UnsafePush;
+use super::tokenizer::{self, Token};
 
 
 
@@ -51,12 +50,10 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 	println!("Finding solutions...");
 
 	// number permutation len + operator permutation len (which is equal to number permutation len, -1)
-	let mut expression_builder_parenless = String::with_capacity(number_permutations[0].len() * 2 - 1);
-	let mut tokens_vec_parenless = Vec::with_capacity(number_permutations[0].len() * 2 - 1);
+	let mut expression_builder_parenless = Vec::with_capacity(number_permutations[0].len() * 2 - 1);
 
 	// +2 for paren
-	let mut expression_builder_with_paren = String::with_capacity(number_permutations[0].len() * 2 - 1 + 2);
-	let mut tokens_vec_with_paren = Vec::with_capacity(number_permutations[0].len() * 2 - 1 + 2);
+	let mut expression_builder_with_paren = Vec::with_capacity(number_permutations[0].len() * 2 - 1 + 2);
 
 	// having two of each of these is faster than one, probably due to their differing capacity
 
@@ -72,14 +69,14 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 
 			build_expression_into(&mut expression_builder_parenless, &number_permutation, &operator_permutation);
 
-			tokenizer::tokenize_into(&mut tokens_vec_parenless, &expression_builder_parenless);
-
-			let result = evaluator::evaluate_tokens(&mut tokens_vec_parenless);
+			let result = evaluator::evaluate_tokens(&mut expression_builder_parenless);
 
 
 			if result == target_number {
-				// winner found!
-				solutions.push(expression_builder_parenless.clone());
+				// unfortunately because evaluate_tokens consumes the vec we have to rebuild it
+				// still much better than having to do convert every single solution considered
+				build_expression_into(&mut expression_builder_parenless, &number_permutation, &operator_permutation);
+				solutions.push(tokenizer::format_tokens(&expression_builder_parenless));
 
 				if find_all_solutions == false {
 					return BruteForcerOutput {
@@ -102,13 +99,12 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 					// possibly pass paren_pos by ref, though it will require more dereferencing
 					build_expression_with_paren_into(&mut expression_builder_with_paren, &number_permutation, &operator_permutation, paren_pos);
 
-					tokenizer::tokenize_into(&mut tokens_vec_with_paren, &expression_builder_with_paren);
-
-					let result = evaluator::evaluate_tokens(&mut tokens_vec_with_paren);
+					let result = evaluator::evaluate_tokens(&mut expression_builder_with_paren);
 
 
 					if result == target_number {
-						solutions.push(expression_builder_with_paren.clone());
+						build_expression_into(&mut expression_builder_with_paren, &number_permutation, &operator_permutation);
+						solutions.push(tokenizer::format_tokens(&expression_builder_with_paren));
 
 						if find_all_solutions == false {
 							return BruteForcerOutput {
@@ -136,24 +132,24 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 
 
 
-fn build_expression_into(expression_builder: &mut String, number_permutation: &[u8], operator_permutation: &[char]) {
+fn build_expression_into(expression_builder: &mut Vec<Token>, number_permutation: &[u8], operator_permutation: &[char]) {
 	expression_builder.clear();
 
 	let input_len = number_permutation.len();
 
 	for i in 0..input_len {
-		expression_builder.unsafe_push_digit(number_permutation[i]);
+		expression_builder.push(Token::Number(number_permutation[i].into()));
 
 		// ensures that a dangling operator isn't placed
 		if i != input_len - 1 {
-			expression_builder.unsafe_push(operator_permutation[i]);
+			expression_builder.push(tokenizer::map_char_to_token(operator_permutation[i]));
 		}
 	}
 }
 
 
 
-fn build_expression_with_paren_into(expression_builder: &mut String, number_permutation: &[u8], operator_permutation: &[char], (lparen_pos, rparen_pos): (usize, usize)) {
+fn build_expression_with_paren_into(expression_builder: &mut Vec<Token>, number_permutation: &[u8], operator_permutation: &[char], (lparen_pos, rparen_pos): (usize, usize)) {
 	expression_builder.clear();
 
 	let input_len = number_permutation.len();
@@ -161,18 +157,18 @@ fn build_expression_with_paren_into(expression_builder: &mut String, number_perm
 	// build expression
 	for i in 0..input_len {
 		if i == lparen_pos {
-			expression_builder.unsafe_push('(');
+			expression_builder.push(Token::LParen);
 		}
 
-		expression_builder.unsafe_push_digit(number_permutation[i]);
+		expression_builder.push(Token::Number(number_permutation[i].into()));
 
 		if i == rparen_pos {
-			expression_builder.unsafe_push(')');
+			expression_builder.push(Token::RParen);
 		}
 
 		// ensures that a dangling operator isn't placed
 		if i != input_len - 1 {
-			expression_builder.unsafe_push(operator_permutation[i]);
+			expression_builder.push(tokenizer::map_char_to_token(operator_permutation[i]));
 		}
 	}
 }

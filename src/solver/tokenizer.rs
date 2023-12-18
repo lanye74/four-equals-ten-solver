@@ -12,20 +12,7 @@ pub enum Token {
 
 
 
-// TODO: simplify this using collect_into when it hits stable (see https://github.com/rust-lang/rust/issues/94780)
-pub fn tokenize_into(output: &mut Vec<Token>, expression: &String) {
-	output.clear();
-
-	let mapped = expression
-		.chars()
-		.map(map_char_to_token);
-
-	output.extend(mapped);
-}
-
-
-
-fn map_char_to_token(character: char) -> Token {
+pub fn map_char_to_token(character: char) -> Token {
 	// this function assumes that any numbers input are positive single-digit integers, which is true for 4=10
 	// if i was writing a tokenizer for more complex inputs, we might have issues
 	// such is not the case : )
@@ -47,6 +34,23 @@ fn map_char_to_token(character: char) -> Token {
 
 
 
+pub fn format_tokens(tokens: &Vec<Token>) -> String {
+	return tokens.iter()
+		.map(|token| match token {
+			Token::Add => '+',
+			Token::Subtract => '-',
+			Token::Multiply => '*',
+			Token::Divide => '/',
+			Token::LParen => '(',
+			Token::RParen => ')',
+
+			Token::Number(num) => char::from_digit(*num as u32, 10).unwrap()
+		})
+		.collect::<String>();
+}
+
+
+
 #[cfg(test)]
 #[test]
 fn test_tokenizer() {
@@ -61,8 +65,12 @@ fn test_tokenizer() {
 			.all(|(el1, el2)| el1 == el2);
 	}
 
-	let mut result = vec![];
-	tokenize_into(&mut result, &String::from("(3*5)/7+0-1*2*9/(8+4)*6"));
+
+
+	let result = String::from("(3*5)/7+0-1*2*9/(8+4)*6")
+		.chars()
+		.map(map_char_to_token)
+		.collect::<Vec<Token>>();
 
 	let expected = vec![
 		Token::LParen, Token::Number(3.0), Token::Multiply, Token::Number(5.0), Token::RParen,

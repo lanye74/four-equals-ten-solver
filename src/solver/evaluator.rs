@@ -105,17 +105,14 @@ fn find_next_operator_pos(input: &[Token]) -> usize {
 
 
 fn substitute_expression(input: &mut Vec<Token>, operator_pos: usize, value: f32) {
-	// this works too, but is cringe and doesn't look nearly as cool as mem::replace
-	// input[operator_pos - 1] = Token::Number(value);
-
-	let _ = std::mem::replace(&mut input[operator_pos - 1], Token::Number(value));
+	input[operator_pos - 1] = Token::Number(value);
 	input.drain(operator_pos..=(operator_pos + 1));
 }
 
 
 
 fn substitute_expression_and_remove_paren(input: &mut Vec<Token>, lparen_pos: usize, rparen_pos: usize, value: f32) {
-	let _ = std::mem::replace(&mut input[lparen_pos], Token::Number(value));
+	input[lparen_pos] = Token::Number(value);
 	input.drain((lparen_pos + 1)..=rparen_pos);
 }
 

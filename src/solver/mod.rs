@@ -10,6 +10,3 @@ mod parentheses_permutator;
 pub use parentheses_permutator::ParenthesesPermutator;
 
 mod tokenizer;
-
-mod unsafe_push;
-pub use unsafe_push::UnsafePush;
