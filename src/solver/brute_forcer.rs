@@ -103,7 +103,7 @@ pub fn brute_force(config: &Config) -> BruteForcerOutput {
 
 
 					if result == target_number {
-						build_expression_into(&mut expression_builder_with_paren, &number_permutation, &operator_permutation);
+						build_expression_with_paren_into(&mut expression_builder_with_paren, &number_permutation, &operator_permutation, paren_pos);
 						solutions.push(tokenizer::format_tokens(&expression_builder_with_paren));
 
 						if find_all_solutions == false {
